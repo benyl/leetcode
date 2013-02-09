@@ -22,7 +22,8 @@ You may not modify the values in the list, only nodes itself can be changed.
  */
 class Solution {
 public:
-    ListNode *swapPairs(ListNode *head) {
+    // version 1, do it in iteration
+    ListNode *swapPairs1(ListNode *head) {
         if(!head) return head;
         if(!(head->next)) return head;
         
@@ -39,6 +40,19 @@ public:
             p->next->next = q;
             p = q;
         }
+        
+        return head;
+    }
+    
+    // version 2, do it in recursion
+    ListNode *swapPairs(ListNode *head) {
+        if(!head) return head;
+        if(!(head->next)) return head;
+        
+        ListNode *p = head->next->next;
+        head->next->next = head;
+        head = head->next;
+        head->next->next = swapPairs(p);
         
         return head;
     }
