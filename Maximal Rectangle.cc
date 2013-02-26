@@ -47,3 +47,59 @@ public:
         return maxret;
     }
 };
+
+
+// version 2, use the solution of maximal rectangle in histogram
+class Solution {
+public:
+    int maximalRectangle(vector<vector<char> > &matrix) {
+        int nSize = matrix.size();
+        if(nSize == 0){
+            return 0;
+        }
+        vector<vector<char> > heights;
+        heights.push_back(vector<char>(matrix[0].size(), 0));
+        int max = 0;
+        for(int i = 0; i< nSize; ++i){
+            vector<char> row;
+            for(int j = 0; j< matrix[i].size(); ++j){
+                if(matrix[i][j] == '1'){
+                    row.push_back(heights[i][j] + 1);
+                }
+                else{
+                    row.push_back(0);
+                }
+            }
+            heights.push_back(row);
+        }
+        for(int i = 1; i <= nSize; ++i){
+            int temp = largestRectangleArea(heights[i]);
+            max = max > temp? max: temp;
+        }
+        return max;
+    }
+    int largestRectangleArea(vector<char> &height) {
+        int nSize = height.size();  
+        int l[nSize + 1];//left bar position  
+        int h[nSize + 1];//height of the left bar  
+        l[0] = h[0] = 0;  
+        int cur_h = 0;  
+        int max = 0;  
+        int top = 0;  
+        for(int i = 0 ; i<= nSize; ++i){  
+            cur_h = i==nSize? 0: height[i];  
+            int j = i;  
+            for(; h[top] > cur_h; j = l[top--]){  
+                int temp = (i - l[top]) * h[top];  
+                if(temp > max){  
+                    max = temp;  
+                }  
+            }  
+            if(cur_h > h[top]){  
+                h[++top] = cur_h;  
+                l[top] = j;  
+            }  
+        }  
+        return max;  
+    }  
+};
