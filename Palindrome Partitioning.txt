@@ -1,0 +1,175 @@
+/*
+Palindrome Partitioning
+
+http://leetcode.com/onlinejudge#question_131
+
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return all possible palindrome partitioning of s.
+
+For example, given s = "aab",
+Return
+
+  [
+    ["aa","b"],
+    ["a","a","b"]
+  ]
+
+=======================================================================
+
+Palindrome Partitioning II
+
+http://leetcode.com/onlinejudge#question_132
+
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return the minimum cuts needed for a palindrome partitioning of s.
+
+For example, given s = "aab",
+Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
+*/
+
+//=======================================================================
+// Palindrome Partitioning
+class Solution {
+public:
+    bool isPalindrome(string s) {
+        if(s.size() == 0) return true;
+        if(s.size() == 1) return true;
+        
+        for(int i=0; i<s.size()/2; ++i)
+            if(s[i] != s[s.size()-1-i])
+                return false;
+        return true;
+    }
+
+    vector<vector<string> > partition(string s) {
+        // use dynamic programming
+        // if s is Palindrome, push to answer
+        // for i = 1 to s.size-1
+            // if s[:i] is Palindrome
+            // get subresult = partition(s[i:])
+            // for sub in subresult:
+                // result += [s[:i] + sub]
+                
+        vector<vector<string> > answer;
+        
+        if(s.size() == 0)
+            return answer;
+        
+        if(isPalindrome(s))
+            answer.push_back(vector<string>(1,s));
+        
+        if(s.size() == 1)
+            return answer;
+        
+        for(int i=1; i<s.size(); ++i) {
+            string s1 = s.substr(0, i); 
+            string s2 = s.substr(i, s.size()-i);
+            
+            if(!isPalindrome(s1))
+                continue;
+                
+            vector<vector<string> > sub_answer = partition(s2);
+            
+            for(int j=0; j<sub_answer.size(); ++j) {
+                sub_answer[j].insert(sub_answer[j].begin(), s1);
+                answer.push_back(sub_answer[j]);
+            }
+        }
+        
+        return answer;
+    }
+};
+
+
+//=======================================================================
+// Palindrome Partitioning II
+
+// version 1, time limit exceeded
+class Solution {
+public:
+    bool isPalindrome(string s) {
+        if(s.size() == 0) return true;
+        if(s.size() == 1) return true;
+        
+        for(int i=0; i<s.size()/2; ++i)
+            if(s[i] != s[s.size()-1-i])
+                return false;
+        return true;
+    }
+
+    int minCut(string s) {
+        // use dynamic programming
+        // if s is Palindrome, push to answer
+        // for i = 1 to s.size-1
+            // if s[:i] is Palindrome
+                // subcut = mincut(s[i:])
+                // min = (min<subcut+1) ? min : subcut+1
+                
+        if(isPalindrome(s))
+            return 0;
+            
+        int min = s.size();
+        
+        for(int i=1; i<s.size(); ++i) {
+            string s1 = s.substr(0, i); 
+            string s2 = s.substr(i, s.size()-i);
+            
+            if(!isPalindrome(s1))
+                continue;
+                
+            int sub_cut = minCut(s2);
+            
+            min = (min<sub_cut+1) ? min : sub_cut+1;
+        }
+        
+        return min;
+    }
+};
+
+
+class Solution {
+public:
+    bool isPalindrome(string &s, int start, int end) {
+        if(start == end) return true;
+        if(start == end - 1) return true;
+        
+        for(int i=0; i<(end-start)/2; ++i)
+            if(s[start+i] != s[end-1-i])
+                return false;
+        return true;
+    }
+    
+    int minCut(string s) {
+        return minCut(s, 0, s.size());
+    }
+
+    
+    int minCut(string &s, int start, int end) {
+        // use dynamic programming
+        // if s is Palindrome, push to answer
+        // for i = 1 to s.size-1
+            // if s[:i] is Palindrome
+                // subcut = mincut(s[i:])
+                // min = (min<subcut+1) ? min : subcut+1
+                
+        if(isPalindrome(s, start, end))
+            return 0;
+            
+        int min = end - start;
+        
+        for(int i=1; i<(end-start); ++i) {
+            string s2 = s.substr(i, s.size()-i);
+            
+            if(!isPalindrome(s, start, start+i))
+                continue;
+                
+            int sub_cut = minCut(s, start+i, end);
+            
+            min = (min<sub_cut+1) ? min : sub_cut+1;
+        }
+        
+        return min;
+    }
+};
