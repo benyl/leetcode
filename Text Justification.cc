@@ -101,3 +101,50 @@ int main()
 
     return 0;
 }
+
+
+//============================================
+
+class Solution {
+public:
+    vector<string> fullJustify(vector<string> &words, int L) {
+        if(words.size()==0) 
+            return vector<string>();
+        
+        vector<string> result;
+        int start=0, end=0, length=0;
+        for(int i=0; i<=words.size(); ++i) {
+            if(i==words.size() || length+words[i].size()>=L) {
+                if(i==words.size() || cand.size()==1) {
+                    for(int j=1; j<cand.size(); ++j)
+                        cand[0] += cand[j];
+                    cand[0] += string(L-length, ' ');
+                    result.push_back(cand[0]);
+                } else if(cand.size() > 1) {
+                    int index = 0;
+                    while(length<L) {
+                        cand[index++] += ' ';
+                        index %= cand.size()-1;
+                        ++length;
+                    }
+                    for(int j=1; j<cand.size(); ++j)
+                        cand[0] += cand[j];
+                    result.push_back(cand[0]);
+                }
+                
+                cand.clear();
+                length = 0;
+            }
+            if(i!=words.size()) {
+                length += words[i].size();
+                cand.push_back(words[i]);
+                if(cand.size() != 1) {
+                    length += 1;
+                    cand.back() = string(" ") + cand.back();
+                }
+                
+            }
+        } 
+        return result;
+    }
+};
