@@ -56,3 +56,33 @@ public:
     }
 };
 
+//=========================================================
+
+class Solution {
+public:
+    bool isPalindrome(int x) {
+        int len=0, mask=1;
+        if(x < 0) return false;
+        
+        while(x/mask>=10) { // 0/1 1/10 2/100 3/1000 4/10000
+            mask *= 10;
+            len += 1;
+        }
+        
+        if(len<1) return true; // 1/10
+        
+        while(len>0) {
+            int lo = x % 10; // 0
+            int hi = x / mask; // 1
+            
+            if (lo != hi) return false;
+            
+            x -= hi*mask;
+            x /= 10;
+            mask /= 100;
+            len -= 2;
+        }
+        
+        return true;
+    }
+};
