@@ -32,12 +32,7 @@ public:
         if(S.size() < T.size()) return 0;
         
         // use dynamic programming
-        vector< vector<int> > dp;
-        for(int i=0; i<S.size()+1; i++)
-        {
-            vector<int> temp(T.size()+1);
-            dp.push_back(temp);
-        }
+        vector< vector<int> > dp(S.size()+1, vector<int>(T.size()+1, 0));
         
         for(int j=0; j<T.size()+1; j++)
             dp[0][j] = 0;
@@ -47,12 +42,10 @@ public:
         
         for(int i=1; i<S.size()+1; i++)
             for(int j=1; j<=i && j<T.size()+1; j++)
-            {
                 if(S[i-1] == T[j-1])
                     dp[i][j] = dp[i-1][j] + dp[i-1][j-1];
                 else
                     dp[i][j] = dp[i-1][j];
-            }
 
         return dp[S.size()][T.size()];
     }

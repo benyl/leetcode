@@ -115,3 +115,49 @@ void main()
   
 	getchar();
 }
+
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+//====================================================================
+#define MIN_INT -2147483647
+
+class Solution {
+public:
+    int maxPathSum(TreeNode *root, int *maxRootSum=NULL) { // 1,2
+        if(!root) { 
+            if(maxRootSum) *maxRootSum=MIN_INT; 
+            return MIN_INT;
+        }
+        
+        int maxPathSumLeft, maxPathSumRight, maxRootSumLeft, maxRootSumRight;
+        
+        maxPathSumLeft = maxPathSum(root->left, &maxRootSumLeft); //2-2
+        maxPathSumRight = maxPathSum(root->right, &maxRootSumRight); //min-min
+        
+        int result = root->val; //1
+        if(root->left) result += maxRootSumLeft; // 1+2
+        if(root->right) result += maxRootSumRight;
+        
+        if(root->left) result = max(result, maxPathSumLeft); //1+2
+        if(root->right) result = max(result, maxPathSumRight);
+        
+        result = max(result, root->val); // 1+2
+        
+        if(maxRootSum) {
+            *maxRootSum = max(maxRootSumLeft, maxRootSumRight);
+            if(*maxRootSum != MIN_INT) *maxRootSum += root->val;
+            else *maxRootSum = root->val;
+            
+            *maxRootSum = (*maxRootSum>0) ? *maxRootSum : 0;
+        }
+        
+        return result; //0
+    }
+};

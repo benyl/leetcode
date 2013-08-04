@@ -10,6 +10,10 @@ Given [1,3],[2,6],[8,10],[15,18],
 return [1,6],[8,10],[15,18].
 */
 
+
+//===========================================================
+// 68 milli secs pass large judge
+
 /**
  * Definition for an interval.
  * struct Interval {
@@ -20,7 +24,7 @@ return [1,6],[8,10],[15,18].
  * };
  */
 
-// overwrite operator function for sorting
+// overload compare function
 bool operator < (const Interval &a,const Interval &b) {
     return a.start < b.start;
 }
@@ -29,20 +33,17 @@ class Solution {
 public:
     vector<Interval> merge(vector<Interval> &intervals) {
         if(intervals.size() < 2) return intervals;
-        sort(intervals.begin(), intervals.end());
+        sort(intervals.begin(), intervals.end()); // sort interval on start
         
-        vector<Interval> result;
-        result.push_back(intervals[0]);
+        int i=0; // anchor for result
+        for(int j=1; j<intervals.size(); ++j)
+            if(intervals[i].end >= intervals[j].start) // found collapse interval
+                intervals[i].end = max(intervals[i].end, intervals[j].end); // merge interval
+            else // else try next interval
+                intervals[++i] = intervals[j];
         
-        for(int i=1; i<intervals.size(); i++) { 
-            if(intervals[i].end <= result.back().end)
-                continue;
-            if(intervals[i].start <= result.back().end)
-                result.back().end = intervals[i].end;
-            else
-                result.push_back(intervals[i]);
-        }
+        intervals.erase(intervals.begin()+i+1, intervals.end()); // erase the legacy interval
         
-        return result;
+        return intervals;
     }
 };

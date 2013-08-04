@@ -19,53 +19,55 @@ If there are multiple such windows, you are guaranteed that there will
 always be only one unique minimum window in S.
 */
 
+// ======================================================================
+// 64 milli secs pass large data
+
 class Solution {
 public:
     string minWindow(string S, string T) {
-        if(T.size()==0) return "";
+        // use a dynamic window to search thru the string
+        int min_start=-1, min_end=S.size();
+        int start=0, end=-1;
         
-        vector<int> require(256, 0);
-        vector<int> found(256, 0);
-        int unique = 0;
-        int match = 0;
+        int count[256], found[256]; // arrays to record characters
+        int count_uni = 0; // number of unique characters in T
+        int match_uni = 0; // number of unique characters match in S
         
-        for(int i=0; i<T.size(); i++) {
-            if(require[T[i]] == 0) unique++;
-            require[T[i]] ++;
+        for(int i=0; i<256; ++i) // initialize arrays
+            { count[i]=0;found[i]=0; }
+            
+        for(int i=0; i<T.size(); ++i) { // count characters in T
+            if(count[T[i]] == 0) ++count_uni;
+            ++count[T[i]];
         }
         
-        int start=0, end=0;
-        string window = S;
-        
-        while(start<=end) {
-            if(match < unique) {
-                if(require[S[end]]!=0) {
-                    found[S[end]]++;
-                    if(found[S[end]]==require[S[end]]) match++;
+        while(end!=S.size()) {
+            if(match_uni < count_uni) {
+                ++end; // extend the window if not enough char match
+                if(count[S[end]] != 0) { // only consider the char found in T
+                    ++found[S[end]];
+                    if(found[S[end]] == count[S[end]]) { // if the window contain enough char in T
+                        ++match_uni;
+                        if(match_uni == count_uni) // check unique character matching
+                            if((end-start) < (min_end - min_start))
+                                { min_end = end; min_start = start; }  // remember the minimum window
+                    }
                 }
-
-                end++;
-                if(end>S.size()) break;
-
-                int temp = end-start, temp2 = window.size();
-                if(match==unique && (end-start)<window.size())
-                    window = S.substr(start, end-start);
             } else {
-                if(require[S[start]]!=0) {
-                    if(found[S[start]]==require[S[start]]) match--;
-                    found[S[start]] --;
+                if(count[S[start]] != 0) { // only consider the char found in T
+                    if(found[S[start]] == count[S[start]]) {  // if the window contain enough char in T
+                        if(match_uni == count_uni) // check unique character matching
+                            if((end-start) < (min_end - min_start))
+                                { min_end = end; min_start = start; } // remember the minimum window
+                        --match_uni;
+                    }
+                    --found[S[start]];
                 }
-                
-                start++;
-                if(start>S.size()) break;
-
-                int temp = end-start, temp2 = window.size();
-                if(match==unique && (end-start)<window.size())
-                    window = S.substr(start, end-start);
+                ++start; // reduce the window if enough char match
             }
         }
         
-        if(window == S && start==0) return "";
-        else  return window;
+        if(min_start == -1) return ""; // return "" if no match window found
+        else return S.substr(min_start, min_end-min_start+1);
     }
 };

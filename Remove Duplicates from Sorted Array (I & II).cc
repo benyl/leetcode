@@ -27,37 +27,36 @@ Given sorted array A = [1,1,1,2,2,3],
 Your function should return length = 5, and A is now [1,1,2,2,3].
 */
 
+// =================================================
+// Remove Duplicates from Sorted Array I
+// 100 milli secs pass lerge judge
+// time complexity o(n), space complexity o(1)
+
 class Solution {
 public:
-    // Remove Duplicates from Sorted Array
     int removeDuplicates(int A[], int n) {
         if(n<2) return n;
-        
-        for(int i=n-1; i>0; i--)
-            if(A[i]==A[i-1])
-                A[i]=A[0];
-        
-        int k=1;
-        for(int i=1; i<n; i++)
-            if(A[i]!=A[0])
-                A[k++]=A[i];
-        
-        return k;
+        int anchor=0;
+        for(int i=1; i<n; ++i)
+            if(A[anchor]!=A[i]) // check no duplicates
+                A[++anchor]=A[i]; // copy the node into new place
+        return anchor+1;
     }
-    
-    // Remove Duplicates from Sorted Array II
+};
+
+// =================================================
+// Remove Duplicates from Sorted Array II, allow twice duplicates
+// 84 milli secs pass lerge judge
+// time complexity o(n), space complexity o(1)
+
+class Solution {
+public:
     int removeDuplicates(int A[], int n) {
         if(n<3) return n;
-        
-        for(int i=n-1; i>1; i--)
-            if(A[i]==A[i-2])
-                A[i]=A[0];
-        
-        int k=2;
-        for(int i=2; i<n; i++)
-            if(A[i]!=A[0])
-                A[k++]=A[i];
-        
-        return k;
+        int anchor=1;
+        for(int i=2; i<n; ++i)
+            if(A[anchor]!=A[i] || A[anchor]!=A[anchor-1]) // allow twice duplicates
+                A[++anchor] = A[i]; // copy the node into new place
+        return anchor+1;
     }
 };

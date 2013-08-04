@@ -14,11 +14,15 @@ If you have figured out the O(n) solution, try coding another solution
 using the divide and conquer approach, which is more subtle.
 */
 
+// =============================================
+// version 1, dynamic programming
+// 44 milli secs pass large judge
+// time complexity: O(n), space complexity: O(1)
+
 class Solution {
 public:
-    // version 1, dynamic programming, O(n)
     int maxSubArray(int A[], int n) {
-        int max = A[0], sum = 0; // remember current sum
+        int max = INT_MIN, sum = 0; // remember current sum
         for(int i=0; i<n; i++){
             sum += A[i];
             max = (sum > max) ? sum : max;
@@ -26,11 +30,18 @@ public:
         }
         return max;
     }
-    
-    // version 2, divide and conquer, O(n*log(n))
+};
+
+// =============================================
+// version 2, divide and conquer
+// 60 milli secs pass large judge
+// time complexity: O(n*log(n)), space complexity: O(n)
+
+class Solution {
+public:
     int maxSubArray(int A[], int n) {
         if(n==1) return A[0];
-        if(n<=0) return (-2147483647-1); // MIN_INT
+        if(n<=0) return INT_MIN;
         
         int mid = n/2, lmax = 0, rmax = 0;
         

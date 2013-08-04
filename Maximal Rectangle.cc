@@ -62,11 +62,10 @@ public:
         int max = 0;
         for(int i = 0; i< nSize; ++i){
             vector<char> row;
-            for(int j = 0; j< matrix[i].size(); ++j){
-                if(matrix[i][j] == '1'){
+            for(int j = 0; j< matrix[i].size(); ++j) {
+                if(matrix[i][j] == '1') {
                     row.push_back(heights[i][j] + 1);
-                }
-                else{
+                } else {
                     row.push_back(0);
                 }
             }

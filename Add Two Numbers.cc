@@ -1,6 +1,8 @@
 /*
 Add Two Numbers
 
+http://leetcode.com/onlinejudge#question_2
+
 You are given two linked lists representing two non-negative numbers. 
 The digits are stored in reverse order and each of their nodes contain 
 a single digit. Add the two numbers and return it as a linked list.
@@ -29,17 +31,15 @@ public:
         if(l1==NULL) return l2;
 		if(l2==NULL) return l1;
         
-		ListNode *result = l1;
+		ListNode *head = l1;
 		
 		bool carry = false;
-		while(l1!=NULL && l2!=NULL)
-		{
+		while(True) {
 			l1->val += l2->val + carry;
 			carry = (l1->val > 9);
 			l1->val %= 10;
 				
-			if(l1->next!=NULL && l2->next!=NULL)
-			{
+			if(l1->next!=NULL && l2->next!=NULL) {
 				l1=l1->next;
 				l2=l2->next;
 			}
@@ -49,8 +49,7 @@ public:
 		if(l2->next!=NULL)
 			l1->next = l2->next;
 			
-		while(carry)
-		{
+		while(carry) {
 			if(l1->next == NULL)
 				l1->next = new ListNode(0);
 				
@@ -61,7 +60,7 @@ public:
 			l1->val %= 10;
 		}
 		
-		return result;
+		return head;
     } // end of: addTwoNumbers(ListNode *l1, ListNode *l2)
 };
 

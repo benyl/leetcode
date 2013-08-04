@@ -36,54 +36,62 @@ Follow up for N-Queens problem.
 Now, instead outputting board configurations, return the total number of distinct solutions.
 */
 
+
+// =========================================================
+// N-Queens I: use bitmap and depth-first backtracking algorithm
+// 36 milli secs pass large judge
+// note: !!! add parentheses to bit manipulation due to low operator precedence !!!
+
 class Solution {
 public:
     vector<vector<string> > solveNQueens(int n) {
-        vector<string> board(n, string(n, '.'));
-        return solveNQueens(0, board);
+        vector<string> last = vector<string>(n, string(n, '.'));
+        return solveNQueens(n, last, 0, 0, 0, 0);
     }
     
-    vector<vector<string> > solveNQueens(int n, vector<string> &board) {
+    vector<vector<string> > solveNQueens(int n, vector<string> &last, int step, 
+                                         int col, int ld, int rd) {
+        if(step == n)
+            return vector<vector<string> >(1, last);
+        
         vector<vector<string> > result;
-        int x = board.size();
-        if(n==x) {
-            for(int i=0;i<x;i++)
-            for(int j=0;j<x;j++)
-                board[i][j] = (board[i][j]=='Q')?'Q':'.';
-            result.push_back(board);
-            return result;
-        }
-                
-        for(int i=0; i<x; i++) {
-            if(board[n][i] == '.') {
-                vector<string> newboard(board);
-                for(int j=0; j<x; j++) {
-                    newboard[j][i] = '*';
-                    newboard[n][j] = '*';
-                    if(n+j< x && i+j< x) newboard[n+j][i+j] = '*';
-                    if(n+j< x && i-j>=0) newboard[n+j][i-j] = '*';
-                    if(n-j>=0 && i+j< x) newboard[n-j][i+j] = '*';
-                    if(n-j>=0 && i-j>=0) newboard[n-j][i-j] = '*';
-                }
-                newboard[n][i] = 'Q';
-                vector<vector<string> > re = solveNQueens(n+1, newboard);
-                for(int j=0; j<re.size(); j++)
-                    result.push_back(re[j]);
-            }
+        int forbid = (col | ld | rd); // forbid places represented by bit map
+        
+        for(int i=0; i<n; ++i) {
+            int mask = (1<<i); 
+            if(~forbid & mask) // find the availale place of bit '0'
+                continue;
+            
+            last[step][i] = 'Q'; // place the queen
+            
+            int c = (col | mask);      // mark for column checking
+            int l = (ld  | mask) << 1; // mark for left-diagonal checking, do left shift
+            int r = (rd  | mask) >> 1; // mark for right-diagonal checking, do right shift
+            
+            vector<vector<string> > sub = solveNQueens(n, last, step+1, c, l ,r);
+            result.insert(result.end(), sub.begin(), sub.end());
+            
+            last[step][i] = '.'; // recover for back-tracking
         }
         
         return result;
     }
-    
-    int totalNQueens(int n, int row=0, int ld=0, int rd=0) {
-        if(row==pow(2.0,n)-1) return 1;
+};
+
+// =========================================================
+// N-Queens II: use bitmap
+// 184 milli secs pass large judge
+// note: !!! add parentheses to bit manipulation due to low operator precedence !!!
+
+class Solution {
+public:
+    int totalNQueens(int n, int col=0, int ld=0, int rd=0) {
+        if(col==(1<<n)-1) return 1; // when all n queens are placed
         
         int sum = 0;
-        for(int i=0;i<n;i++)
-            if(~(row | ld | rd) & (1<<i))
-                sum += totalNQueens(n, row|(1<<i), 
-                        (ld|(1<<i))<<1, (rd|(1<<i))>>1);
-        
+        for(int i=0;i<n;++i)
+            if(~(col | ld | rd) & (1<<i)) // use 3 bitmaps to represented available places
+                sum += totalNQueens(n, col|(1<<i), (ld|(1<<i))<<1, (rd|(1<<i))>>1);
         return sum;
     }
 };

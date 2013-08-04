@@ -6,6 +6,38 @@ http://leetcode.com/onlinejudge#question_9
 Determine whether an integer is a palindrome. Do this without extra space.
 */
 
+//====================================================================
+// version 1, use iteration
+// 300 milli secs pass large judge
+class Solution {
+public:
+    bool isPalindrome(int x) {
+        if(x<0) return false;
+        if(x<10) return true;
+        int first = x%10, last = x, len = 0;
+        while(last>=10) {last/=10; ++len;}
+        
+        while(x!=0) {
+            int l=0; // l is used for counting
+            first = x%10, last = x; // get first & last digit
+            while(l<len) {last/=10; ++l;}
+            
+            if(first != last) return false;
+            
+            while(l>0) {last*=10;--l;}
+            x -= last; // remove last digit
+            x /= 10; // remove first digit
+            len-=2; // update len
+        }
+        
+        return true;
+    }
+};
+
+
+//====================================================================
+// version 2, use recursive and without variables
+// 340 milli secs pass large judge
 class Solution {
 public:
     bool isPalindrome(int x) {
@@ -13,119 +45,14 @@ public:
         return IsPalindrome(&x, x);
     }
     
-    bool IsPalindrome(int* data, int min)
-    {
+    bool IsPalindrome(int* data, int min) { // min is the templary parameter to store data
         if(min == 0) return true;
-
+        // (*data)%10 is the last digit if data, min%10 is the first digit
         if(IsPalindrome(data, min/10) && ((*data)%10 == (min%10))) {
-            (*data) /= 10;
+            (*data) /= 10; // recursivly reduce size of data
             return true;
         }
-
         return false;
     }
 };
 
-
-//====================================================================
-
-#include <stdio.h>
-#include <iostream>
-
-using namespace std;
-
-typedef unsigned int uint;
-
-uint GetMinDigit(uint data)
-{
-  return data % 10;
-}
-
-uint GetMaxDigit(uint data)
-{
-  while(data>=10)
-  {
-    data /= 10; 
-  }
-  return data;
-}
-
-uint RemoveMinDigit(uint data)
-{
-  return data /= 10;
-}
-
-uint RemoveMaxDigit(uint data)
-{
-  int size = 1, remain = data;
-  while(data>=10)
-  {
-    data /= 10;
-    size *= 10;
-  }
-  return remain - data * size;
-}
-
-bool IsPalindrome(uint data)
-{
-  if(data < 10) return true;
-
-  if(GetMinDigit(data) ==
-          GetMaxDigit(data))
-  {
-    data = RemoveMaxDigit(data);
-    data = RemoveMinDigit(data);
-    return IsPalindrome(data);
-  }
-
-  // max and min digit does not match
-  return false;
-}
-
-int main()
-{
-  int data = 123454321;
-  cout << "Input data          : " << data << endl
-       << "Get Max Digit       : " << GetMaxDigit(data) << endl
-       << "Get Min Digit       : " << GetMinDigit(data) << endl
-       << "Remove Max Digit    : " << RemoveMaxDigit(data) << endl
-       << "Remove Min Digit    : " << RemoveMinDigit(data) << endl
-       << "Is palindrome number? " 
-       << (IsPalindrome(data)? "True" : "False") << endl;
-
-  getchar();
-  return 0;
-}
-
-//====================================================================
-
-#include <stdio.h>
-#include <iostream>
-
-using namespace std;
-
-typedef unsigned int uint;
-
-bool IsPalindrome(uint* data, uint min)
-{
-  if(min == 0) return true;
-
-  if(IsPalindrome(data, min/10) && ((*data)%10 == (min%10)))
-  {
-    (*data) /= 10;
-    return true;
-  }
-
-  return false;
-}
-
-int main()
-{
-  int data = 123454321;
-  cout << "Input data          : " << data << endl
-       << "Is palindrome number? " 
-       << (IsPalindrome(&data, data)? "True" : "False") << endl;
-
-  getchar();
-  return 0;
-}

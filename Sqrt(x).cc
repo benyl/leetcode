@@ -8,25 +8,55 @@ Implement int sqrt(int x).
 Compute and return the square root of x.
 */
 
-#define MAX_ROOT 46340
-
+//======================================================================= 
+// version 1, use binary search
 class Solution {
 public:
+    const int MAX_ROOT = std::sqrt(INT_MAX); // max root of integer
+    
     int sqrt(int x) {
-        if(x<2) return x;
-		if(MAX_ROOT * MAX_ROOT < x) return MAX_ROOT;
+        // limit the upper bound of root, or else time limit exceed
         int min = 0;
-        int max = x/2;
-		max = (max<MAX_ROOT) ? max:MAX_ROOT;
-        while(min < max){
+        int max = (x < MAX_ROOT) ? x : MAX_ROOT;
+        
+        // use binary search
+        while(min <= max){
             int mid = (min+max)/2;
-            
-            if(mid * mid>x)
-                max = mid-1;
-            else if ((mid+1)*(mid+1) <= x)
+            int sqr = mid * mid;
+            if(sqr == x)
+                return mid;
+            else if (sqr < x)
                 min = mid+1;
-            else return mid;
+            else
+                max = mid-1;
         }
+        
         return (min+max)/2;
+    }
+};
+
+//======================================================================= 
+// version 2, use Newton's method for root approximation
+// https://en.wikipedia.org/wiki/Newton's_method
+// Newton's method: t1 = t0 - f(t0) / f'(t0)
+// f(t0) = t0 ^ 2 - x
+// f'(t0) = 2 * t0
+class Solution {
+public:
+    const float EPS = 0.0001; // precision for aproximation
+    
+    int sqrt(int x) {
+        if(x <= 1) return x;
+        double root = x;
+        while(true) {
+            double oldroot = root;
+            // use Newton's method: t1 = t0 - f(t0) / f'(t0)
+            // be careful about implicit integer casting
+            root = root / 2.0 + x / 2.0 / root; 
+            
+            // break if we reach a precision 
+            if(abs(oldroot - root) < EPS) break;
+        }
+        return floor(root);
     }
 };

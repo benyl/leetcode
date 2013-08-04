@@ -11,7 +11,7 @@ return 1->4->3->2->5->NULL.
 
 Note:
 Given m, n satisfy the following condition:
-1 ¡Ü m ¡Ü n ¡Ü length of list.
+1 <= m <= n <= length of list.
 */
 
 /**
@@ -25,39 +25,35 @@ Given m, n satisfy the following condition:
 class Solution {
 public:
     ListNode *reverseBetween(ListNode *head, int m, int n) {
-        if(!head || n==m) return head;
+        // add a dummy head before head
+        ListNode *dhead = new ListNode(0);
+        dhead->next = head;
         
-        ListNode *first = NULL; // first to reverse
-        ListNode *last = NULL; // last to reverse
-        ListNode *begin = NULL; // node before first node
-        ListNode *end = NULL; // node after last node
-        
-        first = head;
+        ListNode *pre = dhead; // node before reverse part
+        // find the node before reverse part
         while(m!=1) {
-            begin = first;
-            first = first->next;
-            m--; n--;
+            pre = pre->next;
+            --m; --n;
         }
         
-        ListNode *prev = first;
-        last=first->next;
-        end=last->next;
+        // the first node of reverse part will be the last node
+        ListNode *curr = pre->next; // current node for iteration
+        ListNode *last = curr; // remember the last node of reverse part
         
-        for(m=2;m<n;m++) {
-            last->next = prev;
-            
-            prev = last;
-            last = end;
-            end = end->next;
+        // insert the nodes at the head of reverse part
+        for(int i=0; i<n; ++i) {
+            ListNode *temp = curr->next;
+            curr->next = pre->next;
+            pre->next = curr;
+            curr = temp;
         }
         
-        last->next = prev;
-        first->next = end;
+        // link the last node to the rest of the linked list
+        last->next = curr;
         
-        if(begin) {
-            begin->next = last;
-            return head;
-        }
-        else return last;
+        // remove dummy head
+        head = dhead->next;
+        delete dhead;
+        return head;
     }
 };

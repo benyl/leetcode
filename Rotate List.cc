@@ -22,24 +22,30 @@ class Solution {
 public:
     ListNode *rotateRight(ListNode *head, int k) {
         if(!head) return head;
+        int length = 1;
+        ListNode *tail = head;
         
-        int len = 1;
-        ListNode *p = head;
-        while(p->next!=NULL) {
-            p=p->next;
-            len++;
+        // get the length of list
+        while(tail->next!=NULL) {
+            ++length;
+            tail = tail->next;
         }
         
-        k = len - k%len;
-        if(k==len) return head;
+        // return head if not need to rotate
+        k %= length;
+        if(k == 0) return head;
         
-        p->next=head;
-        for(int i=0; i<k; i++) {
-            p = p->next;
-        }
+        // connect the tail to head
+        tail->next = head;
         
-        head = p->next;
-        p->next = NULL;
+        // rotate the list to the k-th node
+        for(int i=0; i<length-k; ++i)
+            tail = tail->next;
+        
+        // cut the list at tail
+        head = tail->next;
+        tail->next = NULL;
+        
         return head;
     }
 };

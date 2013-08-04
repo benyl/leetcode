@@ -8,50 +8,34 @@ For example, given candidate set ["tea","and","ate","eat","den"]
 A solution set is: ["tea","ate","eat"]
 */
 
-#include <stdio.h>
-#include <vector>
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <map>
-
-using namespace std;
-
+// 228 milli secs pass large test
 class Solution {
 public:
     vector<string> anagrams(vector<string> &strs) {
-        // Start typing your C/C++ solution below
-        // DO NOT write int main() function
-
-		vector<string> result;
-
+    	vector<string> result;
 		if(strs.size()< 2) return result;
-
-		map<string, vector<string> > strsmap;
-        // sort the string in the vector
-		// and insert the string into hash map
-		for(int i=0;i<strs.size(); i++)
-		{
+        
+        // sort the string as key for the hash map
+        map<string, vector<string> > strsmap;
+		for(int i=0;i<strs.size(); i++) {
 			string key = strs[i];
 			sort(key.begin(),key.end());
 			strsmap[key].push_back(strs[i]);
-
-			if(strsmap[key].size() == 2)
-			{
-				result.push_back(strsmap[key][0]);
-				result.push_back(strs[i]);
-			}
-			else if(strsmap[key].size() > 2)
-			{
-				result.push_back(strs[i]);
-			}
 		}
+        
+        // insert all the strings that has anagrams
+        for(auto iter=strsmap.begin(); iter!=strsmap.end(); iter++)
+            if(iter->second.size()>1)
+                result.insert(result.end(), iter->second.begin(), iter->second.end());
 
 		// return the strings that has anagrams
 		return result;
     }
 };
 
+
+
+// code for testing
 template <class T>
 void PrintVec(vector<T> vec)
 {

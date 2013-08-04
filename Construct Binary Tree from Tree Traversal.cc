@@ -19,12 +19,6 @@ Note:
 You may assume that duplicates do not exist in the tree.
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <algorithm>
-using namespace std;
-
 /**
  * Definition for binary tree
  * struct TreeNode {
@@ -35,89 +29,54 @@ using namespace std;
  * };
  */
 
+// =========================================================
+// Construct Binary Tree from Preorder and Inorder Traversal
+// pass large judge with 156 milli secs
+// time complexity: o(n^2) worse case, space complexity: o(n) worse case
+
 class Solution {
 public:
-    // Construct Binary Tree from Preorder and Inorder Traversal
-    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
-        if(preorder.size() != inorder.size() || 
-           !preorder.size() || !inorder.size())
-            return NULL;
-            
-        TreeNode *root = new TreeNode(preorder.front());
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder, 
+                        int pre=-1, int in=-1, int len=0) {
+                        
+        if(in==-1) { pre=0; in=0; len=inorder.size(); }
+        if(len <= 0) return NULL;
+        if(len == 1) return new TreeNode(inorder[in]);
         
-        if(inorder.size() == 1) {
-            return root;
-        } else if(preorder.front() == inorder.front()) {
-            preorder.erase(preorder.begin());
-            inorder.erase(inorder.begin());
-            root->right = buildTree(preorder, inorder);
-            return root;
-        } else if(preorder.front() == inorder.back()) {
-            preorder.erase(preorder.begin());
-            inorder.erase(inorder.end()-1);
-            root->left = buildTree(preorder, inorder);
-            return root;
-        } else {
-            // iterin points to the root node in inorder
-            vector<int>::iterator iterin = 
-                find(inorder.begin(), inorder.end(), preorder.front());
-            
-            // iterpre points to the first right node in preorder
-            vector<int>::iterator iterpre = 
-                preorder.begin() + (iterin - inorder.begin()) + 1;
+        int privot = 0;
+        while(inorder[in+privot] != preorder[pre]) ++privot;
         
-            vector<int> pre1(preorder.begin()+1, iterpre);
-            vector<int> pre2(iterpre, preorder.end());
-            
-            vector<int> in1(inorder.begin(), iterin);
-            vector<int> in2(iterin+1, inorder.end());
-            
-            root->left = buildTree(pre1, in1);
-            root->right = buildTree(pre2, in2);
-            
-            return root;
-        }
+        TreeNode *root = new TreeNode(inorder[in+privot]);
+        
+        root->left = buildTree(preorder, inorder, pre+1, in, privot);
+        root->right = buildTree(preorder, inorder, pre+privot+1, in+privot+1, len-privot-1);
+        
+        return root;
     }
-    
-    // Construct Binary Tree from Inorder and Postorder Traversal
-    TreeNode *buildTree2(vector<int> &inorder, vector<int> &postorder) {
-        if(postorder.size() != inorder.size() || 
-           !postorder.size() || !inorder.size())
-            return NULL;
-            
-        TreeNode *root = new TreeNode(postorder.back());
+};
+
+// ==========================================================
+// Construct Binary Tree from Inorder and Postorder Traversal
+// pass large judge with 156 milli secs
+// time complexity: o(n^2) worse case, space complexity: o(n) worse case
+
+class Solution {
+public:
+    TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder, 
+                        int in=-1, int post=-1, int len=0) {
+                        
+        if(in==-1) { in=0; post=0; len=inorder.size(); }
+        if(len <= 0) return NULL;
+        if(len == 1) return new TreeNode(inorder[in]);
         
-        if(inorder.size() == 1) {
-            return root;
-        } else if(postorder.back() == inorder.front()) {
-            postorder.erase(postorder.end()-1);
-            inorder.erase(inorder.begin());
-            root->right = buildTree(inorder, postorder);
-            return root;
-        } else if(postorder.back() == inorder.back()) {
-            postorder.erase(postorder.end()-1);
-            inorder.erase(inorder.end()-1);
-            root->left = buildTree(inorder, postorder);
-            return root;
-        } else {
-            // iterin points to the root node in inorder
-            vector<int>::iterator iterin = 
-                find(inorder.begin(), inorder.end(), postorder.back());
-            
-            // iterpost points to the first right node in postorder
-            vector<int>::iterator iterpost = 
-                postorder.begin() + (iterin - inorder.begin());
+        int privot = 0;
+        while(inorder[in+privot] != postorder[post+len-1]) ++privot;
         
-            vector<int> post1(postorder.begin(), iterpost);
-            vector<int> post2(iterpost, postorder.end()-1);
-            
-            vector<int> in1(inorder.begin(), iterin);
-            vector<int> in2(iterin+1, inorder.end());
-            
-            root->left = buildTree(in1, post1);
-            root->right = buildTree(in2, post2);
-            
-            return root;
-        }
+        TreeNode *root = new TreeNode(inorder[in+privot]);
+        
+        root->left = buildTree(inorder, postorder, in, post, privot);
+        root->right = buildTree(inorder, postorder, in+privot+1, post+privot, len-privot-1);
+        
+        return root;
     }
 };

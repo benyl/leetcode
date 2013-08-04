@@ -52,3 +52,36 @@ public:
         return result;
     }
 };
+
+
+//===========================================================
+class Solution {
+public:
+    string simplifyPath(string path) {
+        if(path == "") return "/";
+        if(path[0] != '/') path = '/' + path;
+        if(path.back() != '/') path = path + '/';
+        
+        int p1=0, p2=1;
+        vector<string> stack;
+        while(p2<path.size()) {
+            if(path[p2]!='/') ++p2;
+            else {
+                string sub = path.substr(p1+1, p2-p1-1);
+                if(sub == "." || sub == "") ; // do nothing
+                else if(sub == "..") { if(!stack.empty()) stack.pop_back(); } 
+                else stack.push_back(sub);
+                p1 = p2; ++p2;
+            }
+        }
+        
+        string result = "";
+        
+        for(int i=0; i<stack.size(); ++i)
+            result += "/" + stack[i];
+            
+        if(result == "") result = "/";
+        
+        return result;
+    }
+};

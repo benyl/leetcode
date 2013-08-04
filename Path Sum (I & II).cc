@@ -41,95 +41,58 @@ return
 ]
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <utility>
-#include <stack>
-
-using namespace std;
-
 /**
  * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
  */
-struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
-};
-
+ 
+// ============================================
+// Path Sum
+//
 class Solution {
 public:
     bool hasPathSum(TreeNode *root, int sum) {
         if(!root) return false;
         
-        // if leaf node = sum
-        if(root->left==NULL && root->right==NULL && root->val==sum)
-            return true;
+        // if is leaf node
+        if(!root->left && !root->right && root->val==sum) return true;
         
-        //check left subtree
-        if(root->left && hasPathSum(root->left, sum-root->val))
-            return true;
-            
-        //check right subtree
-        if(root->right && hasPathSum(root->right, sum-root->val))
-            return true;
-            
-        return false;
+        // check both left and right sub-tree
+        return hasPathSum(root->left, sum-root->val) || hasPathSum(root->right, sum-root->val);
     }
-    
+};
+
+// ============================================
+// Path Sum II
+// 
+class Solution {
+public:
     vector<vector<int> > pathSum(TreeNode *root, int sum) {
-        vector<vector<int> > result;
-        if(!root) return result;
+        if(root==NULL) return vector<vector<int> >();
         
-        vector<TreeNode *> path; // remember current path
-        stack<pair <TreeNode *,TreeNode *> > s; // stack of node
+        // if is leaf node
+        if(!root->left && !root->right && root->val==sum)
+            return vector<vector<int> >(1, vector<int>(1, sum));
         
-        if(root->left==NULL && root->right==NULL && root->val==sum) {
-            vector<int> valpath;
-            valpath.push_back(root->val);
-            result.push_back(valpath);
-            return result;
-        } else {
-            path.push_back(root);
-            if(root->right)
-                s.push(make_pair(root->right, root));
-            if(root->left)
-                s.push(make_pair(root->left, root));
-        } // end of: if(root->left==NULL && root->right==NULL ...
+        // get the result of both left and right sub-tree
+        vector<vector<int> > left = pathSum(root->left, sum-root->val);
+        vector<vector<int> > right = pathSum(root->right, sum-root->val);
         
-        while(!s.empty()) {
-            TreeNode *child = s.top().first;
-            TreeNode *parent = s.top().second;
-            s.pop();
+        // add the root node to paths
+        for(int i=0; i<left.size(); ++i)
+            left[i].insert(left[i].begin(), root->val);
+        for(int i=0; i<right.size(); ++i)
+            right[i].insert(right[i].begin(), root->val);
             
-            while(path.size() && (path.back() != parent))
-                path.pop_back();
-                
-            // if it's leaf node check path sum
-            if(child->left==NULL && child->right==NULL) {
-                int pathsum = 0;
-                for(int i=0; i!=path.size(); i++)
-                    pathsum += path[i]->val;
-                pathsum += child->val;
-                
-                if(pathsum == sum) {
-                    vector<int> valpath;
-                    for(int i=0; i!=path.size(); i++)
-                        valpath.push_back(path[i]->val);
-                    valpath.push_back(child->val);
-                    result.push_back(valpath);
-                }
-            } else {
-                path.push_back(child);
-                if(child->right)
-                    s.push(make_pair(child->right, child));
-                if(child->left)
-                    s.push(make_pair(child->left, child));
-            }
-        } // end of: while(!s.empty())
-        
+        vector<vector<int> > result;
+        result.insert(result.end(), left.begin(), left.end());
+        result.insert(result.end(), right.begin(), right.end());
+            
         return result;
     }
 };

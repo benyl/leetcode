@@ -1,6 +1,8 @@
 /*
 Binary Tree Inorder Traversal
 
+http://leetcode.com/onlinejudge#question_94
+
 Given a binary tree, return the inorder traversal of its nodes' values.
 
 For example
@@ -32,53 +34,51 @@ struct TreeNode {
   TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
+// ===============================================
+// Recursive version
 class Solution {
 public:
-  // Recursive version
-  vector<int> inorderTraversalTrial(TreeNode *root) {
-    vector<int> result;
-    if(root != NULL)
-    {
-      vector<int> pre = inorderTraversalTrial(root->left);
-      vector<int> post = inorderTraversalTrial(root->right);
-      result.insert(result.end(), pre.begin(), pre.end());
-      result.push_back(root->val);
-      result.insert(result.end(), post.begin(), post.end());
+    vector<int> inorderTraversalTrial(TreeNode *root) {
+        vector<int> result;
+        if(root != NULL) {
+            result = inorderTraversalTrial(root->left);
+            result.push_back(root->val);
+            vector<int> post = inorderTraversalTrial(root->right);
+            result.insert(result.end(), post.begin(), post.end());
+        }
+        return result;
     }
-       
-    return result;
-  }
-
-  // Iterative version
-  vector<int> inorderTraversal(TreeNode *root) {
-    vector<int> result;
-    TreeNode *p = root;
-    stack<TreeNode *> nstack;
-
-    if(root== NULL) return result;
-  
-    while(p!=NULL || !nstack.empty())
-    {
-      if(p!=NULL)
-      {
-        nstack.push(p->right);
-        nstack.push(p);
-        p = p->left;
-      }
-      else if(!nstack.empty())
-      {
-        p=nstack.top();
-        nstack.pop();
-        result.push_back(p->val);
-        p=nstack.top();
-        nstack.pop();
-      }
-    }
-  
-    return result;
-  }  
 };
 
+// ===============================================
+// Iterative version
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode *root) {
+        vector<int> result;
+        TreeNode *curr = root;
+        stack<TreeNode *> mid_stk, right_stk;
+        
+        while(curr || !mid_stk.empty()) {
+            if(curr) {
+                right_stk.push(curr->right);
+                mid_stk.push(curr);
+                curr = curr->left;
+            } else {
+                result.push_back(mid_stk.top()->val);
+                curr = right_stk.top();
+                mid_stk.pop();
+                right_stk.pop();
+            }
+        }
+        
+        return result;
+    }
+};
+
+
+// ------------------------------------------------
+// test code
 template <class T>
 void PrintVec(vector<T> vec)
 {

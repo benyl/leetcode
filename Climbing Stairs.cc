@@ -1,5 +1,8 @@
 /*
 Climbing Stairs
+
+http://leetcode.com/onlinejudge#question_70
+
 You are climbing a stair case. It takes n steps to reach to the top.
 
 Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
@@ -13,21 +16,13 @@ using namespace std;
 class Solution {
 public:
     int climbStairs(int n) {
-        vector<int> steps;
-        
-        if(n<=0) return 0;
-        
-        for(int i=0; i<n; i++)
-        {
-            int step = 0;
-            if(i == 0) step = 1;
-            else if(i == 1) step = 2;
-            else step = steps[i-1] + steps[i-2];
-            
-            steps.push_back(step);
-        }
-        
-        return steps[n-1];
+        vector<int> steps(n+1, 0);
+        steps[1] = 1; steps[2] = 2;
+
+        for(int i=3; i<=n; ++i)
+            steps[i] = steps[i-1] + steps[i-2];
+
+        return steps[n];
     }
 };
 

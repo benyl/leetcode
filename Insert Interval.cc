@@ -25,48 +25,67 @@ This is because the new interval [4,9] overlaps with [3,5],[6,7],[8,10].
  *     Interval(int s, int e) : start(s), end(e) {}
  * };
  */
+
+// ===========================================================================
+// 68 milli secs pass large judge
+// time complexity O(n), space complexity O(1) 
 class Solution {
 public:
     vector<Interval> insert(vector<Interval> &intervals, Interval newInterval) {
-        if(intervals.size() == 0) {
-            intervals.push_back(newInterval);
-            return intervals;
-        }
+        int start=0, end=-1; // used to mark the first and last collapse intervals
         
-        if(newInterval.start > intervals.back().end) {
-            intervals.push_back(newInterval);
-            return intervals;
-        }
-        
-        // find the first and last interval that overlap with newInterval
-        int first = -1, last = -1;
-        for(int i=0; i<intervals.size(); i++) {
-            if(intervals[i].start > newInterval.end) {
-                last = i;
-                break;
-            }
-            if(intervals[i].end < newInterval.start)
-                continue;
+        for(int i=0; i<intervals.size(); ++i) {
+            // find collapse intervals
+            if ( (newInterval.start >= intervals[i].start && newInterval.start <= intervals[i].end) || 
+                 (newInterval.end >= intervals[i].start && newInterval.end <= intervals[i].end)  || 
+                 (intervals[i].start >= newInterval.start && intervals[i].start <= newInterval.end) ||
+                 (intervals[i].end >= newInterval.start && intervals[i].end <= newInterval.end) ) 
+            {    
+                if(end==-1) start = i;
+                end = i;
                 
-            if(first==-1) first = i;
-            
-            if(intervals[i].start < newInterval.start)
-                newInterval.start = intervals[i].start;
-            
-            if(intervals[i].end > newInterval.end)
-                newInterval.end = intervals[i].end;
+                // merge collapse intervals
+                newInterval.start = min(newInterval.start, intervals[i].start);
+                newInterval.end = max(newInterval.end, intervals[i].end);
+            } 
+            else if(newInterval.start > intervals[i].end) ++start;
+            else break;
         }
         
-        if(first==-1 && last==-1) {             // can not find a smaller interval, insert at last
-            intervals.insert(intervals.end(), newInterval);
-        } else if (first==-1 && last!=-1) {     // break out a middle, insert at middle
-            intervals.insert(intervals.begin() + last, newInterval);
-        } else { // (first != -1)               // has collapse, remove the collapse intervals
-            intervals[first] = newInterval;
-            if(last==-1) last = intervals.size();
-            intervals.erase(intervals.begin()+first+1, intervals.begin()+last);
+        if(end == -1) // no collapse intervals, insert into the list
+            intervals.insert(intervals.begin() + start, newInterval);
+        else { // has collapse intervals, replace the node from start ~ end with interval
+            intervals[start] = newInterval;
+            intervals.erase(intervals.begin()+start+1, intervals.begin()+end+1);
         }
-        
+
         return intervals;
     }
 };
+
+// =========================================================================
+// version 2, use binary match to find the insertion point, and then do merging
+class Solution {
+    static bool cmp(const Interval& a, const Interval& b) {
+        return a.start < b.start;
+    }
+public:
+    vector<Interval> insert(vector<Interval> &intervals, Interval newInterval) {
+        auto it = lower_bound(intervals.begin(), intervals.end(), newInterval, Solution::cmp);
+        intervals.insert(it, newInterval);
+
+        vector<Interval> ret;
+        for (auto& itv : intervals) {
+            if (ret.empty()) ret.push_back(itv);
+            else {
+                if (ret.back().end >= itv.start) {
+                    ret.back().end = max(ret.back().end, itv.end);
+                } else {
+                    ret.push_back(itv);
+                }
+            }
+        }
+        return ret;
+    }
+};
+

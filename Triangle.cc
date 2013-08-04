@@ -18,46 +18,20 @@ Note
 Bonus point if you are able to do this using only O(n) extra space, where n is the total number of rows in the triangle.
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-
-using namespace std;
+// =============================================================
+// directly add the path sum on the triangle
+// large judge: 36 milli secs
+// time complexity: O(n), space complexity: O(1)
 
 class Solution {
 public:
-    bool isPalindrome(string s) {
-        string t = "";
+    int minimumTotal(vector<vector<int> > &triangle) {
+        if(triangle.size() == 0) return 0;
         
-        // consider only alphanumeric characters and ignoring cases
-        for(int i=0; i<s.length(); i++)
-        {
-            if((s[i]>='0' && s[i]<='9') || (s[i]>='a' && s[i]<='z'))
-                t += s[i];
-            else if(s[i]>='A' && s[i]<='Z')
-                t += s[i] + 32; // 'a' = 'A' + 32
-        }
+        for(int row=triangle.size()-2; row>=0; --row)
+            for(int col=0; col<row+1; ++col)
+                triangle[row][col] += min(triangle[row+1][col], triangle[row+1][col+1]);
         
-        // check palindrome
-        for(int i=0; i<t.length()/2; i++)
-        {
-            if(t[i] != t[t.length() - 1 - i])
-                return false;
-        }
-        
-        return true;
-    } // end of: bool isPalindrome(string s)
+        return triangle[0][0];
+    }
 };
-
-int main()
-{
-  string s = "A man, a plan, a canal: Panama";
-  
-  Solution sol;
-  cout << "Input data : " << s << endl
-       << "Is palindrome? " 
-       << (sol.isPalindrome(s)? "True" : "False") << endl;
-
-  getchar();
-  return 0;
-}

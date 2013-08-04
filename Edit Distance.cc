@@ -12,58 +12,30 @@ b) Delete a character
 c) Replace a character
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <vector>
-
-using namespace std;
-
 class Solution {
 public:
     int minDistance(string word1, string word2) {
-        // use dynamic programming
-        vector< vector<int> > dp;
-        for(int i=0; i<word1.size()+1; i++)
-        {
-            vector<int> temp(word2.size()+1);
-            dp.push_back(temp);
-        }
+        if (word1.size()==0) return word2.size();
+        if (word2.size()==0) return word1.size();
         
-        for(int i=0; i<word1.size()+1; i++)
+        vector< vector<int> > dp (word1.size()+1,
+            vector<int>(word2.size()+1, 0));
+        
+        // use dp to find the edit distance
+        for(int i=0; i<=word1.size(); ++i)
             dp[i][0] = i;
-            
-        for(int j=0; j<word2.size()+1; j++)
+        
+        for(int j=0; j<=word2.size(); ++j)
             dp[0][j] = j;
         
-        for(int i=1; i<word1.size()+1; i++)
-        for(int j=1; j<word2.size()+1; j++)
-        {
+        // if character is the same, 
+        for(int i=1; i<=word1.size(); ++i)
+        for(int j=1; j<=word2.size(); ++j)
             if(word1[i-1] == word2[j-1])
                 dp[i][j] = dp[i-1][j-1];
             else
-            {
-                int min = dp[i-1][j-1];
-                if(min > dp[i][j-1]) min = dp[i][j-1];
-                if(min > dp[i-1][j]) min = dp[i-1][j];
-                dp[i][j] = min + 1;
-            }
-        }
+                dp[i][j] = min({dp[i][j-1], dp[i-1][j], dp[i-1][j-1]}) + 1;
         
-        return dp[S.size()][T.size()];
+        return dp[word1.size()][word2.size()];
     }
 };
-
-void main()
-{
-    Solution sol;
-    string word1 = "hello";
-    string word2 = "lo";
-    
-    cout << word1 << endl;
-    cout << word2 << endl;
-    
-    cout << sol.minDistance(word1, word2) << endl;
-    
-    getchar();
-}

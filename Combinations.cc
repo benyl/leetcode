@@ -16,47 +16,39 @@ If n = 4 and k = 2, a solution is:
 ]
 */
 
-#include<stdio.h>
-#include<iostream>
-#include<vector>
-
-using namespace std;
-
+// pass large judge with 68 milli secs
 class Solution {
 public:
-  vector<vector<int> > combine(int n, int k) {
-    vector<vector<int> > result;
-	
-	// check valid inputs
-	if(k>n || k<1 || n<1) return result;
-	if(k==n) {
-	  vector<int> temp;
-	  for(int i=0; i<n; i++)
-	    temp.push_back(i+1);
-      result.push_back(temp);
-	  return result;
-	}
-	
-	result = combine(n-1, k); // combinations that contains no "n"
-	
-	// then we construct combinations that contains "n"
-	vector<vector<int> > temp = combine(n-1, k-1);
-	for(int i=0; i<temp.size(); i++)
-	{
-	  temp[i].push_back(n);
-	  result.push_back(temp[i]);
-	}
-	
-	if(k==1) {
-	  vector<int> temp;
-	  temp.push_back(n);
-      result.push_back(temp);
-	}
-
-    return result;
-  }
+    vector<vector<int> > combine(int n, int k) {
+        vector<vector<int> > result;
+        
+        if(n<k || n<=0 || k<=0) return result;
+        if(k==1) {
+            result = vector<vector<int> >(n, vector<int>(1, 0));
+            for(int i=0; i<n; ++i)
+                result[i][0] = i+1;
+            return result;
+        }
+        if(k==n) {
+            result = vector<vector<int> >(1, vector<int>(n, 0));
+            for(int i=0; i<n; ++i)
+                result[0][i] = i+1;
+            return result;
+        }
+        
+        result = combine(n-1, k);
+        vector<vector<int> > temp = combine(n-1, k-1);
+        for(int i=0; i<temp.size(); ++i)
+            temp[i].push_back(n);
+        
+        result.insert(result.end(), temp.begin(), temp.end());
+        return result;
+    }
 };
 
+
+//=====================================================
+// test code
 template <class T>
 void PrintVec(vector<T> vec)
 {
