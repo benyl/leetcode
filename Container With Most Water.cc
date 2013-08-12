@@ -18,13 +18,13 @@ public:
         int maxSize = 0;
         int left = 0, right = height.size()-1;
         while(left<right) {
-            int area = min(height[left], height[right]) * (right - left);
-            maxSize = (maxSize>area) ? maxSize : area;
+            int size = min(height[left], height[right]) * (right - left);
+            maxSize = max(maxSize, size);
             
             if(height[left]<height[right]) 
-                left++;
+                ++left;
             else 
-                right--;
+                --right;
         }
         return maxSize;
     }

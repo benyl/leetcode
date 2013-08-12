@@ -33,11 +33,6 @@ Given n = 3, your program should return all 5 unique BST's shown below.
 */
 
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-using namespace std;
-
 /**
  * Definition for binary tree
  */
@@ -48,6 +43,8 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
+// =======================================================
+// Unique Binary Search Trees
 class Solution {
 public:
     int numTrees(int n) {
@@ -62,12 +59,42 @@ public:
         
         return num[n];
     }
-    
-    vector<TreeNode *> generateTrees(int n) {
-        return generateTrees(n, 1);
+}
+
+// =======================================================
+// Unique Binary Search Trees II
+// version 1
+class Solution {
+public:
+    vector<TreeNode *> generateTrees(int n, int start=1) {
+        vector<TreeNode *> result;
+        if(n==0) result.push_back(NULL);
+        else if(n==1) result.push_back(new TreeNode(start));
+        else {
+            for(int i=0; i<n; i++) {
+                vector<TreeNode *> left = generateTrees(i, start);
+                vector<TreeNode *> right = generateTrees(n-i-1, start+i+1);
+                
+                for(int j=0; j<left.size(); j++) {
+                for(int k=0; k<right.size(); k++) {
+                        TreeNode *root = new TreeNode(start+i);
+                        root->left = left[j];
+                        root->right = right[k];
+                        result.push_back(root);
+                }
+                }
+            }
+        }
+        return result;
     }
-    
-    vector<TreeNode *> generateTrees(int n, int start) {
+};
+
+// =======================================================
+// Unique Binary Search Trees II
+// version 2
+class Solution {
+public:
+    vector<TreeNode *> generateTrees(int n, int start=1) {
         vector<TreeNode *> result;
         if(n==0) result.push_back(NULL);
         else if(n==1) result.push_back(new TreeNode(start));
@@ -100,14 +127,3 @@ public:
         return result;
     }
 };
-
-
-void main()
-{
-    Solution sol;
-    
-	int n = 2;
-    vector<TreeNode *> result = sol.generateTrees(n);
-	cout << sol.numTrees(n) << ":" << result.size() << endl;
-    getchar();
-}

@@ -50,3 +50,25 @@ public:
         return head;
     }
 };
+
+class Solution {
+public:
+    ListNode *removeNthFromEnd(ListNode *head, int n) {
+        ListNode *pre = new ListNode(0);
+        ListNode *end = head;
+        pre->next=head; head=pre;
+        
+        for(int i=0; i<n; ++i) {
+            if(end==NULL) return head->next;
+            end=end->next;
+        }
+        
+        while(end!=NULL) {
+            end = end->next;
+            pre = pre->next;
+        }
+        
+        pre->next=pre->next->next;
+        return head->next;
+    }
+};

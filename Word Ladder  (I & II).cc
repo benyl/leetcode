@@ -104,7 +104,6 @@ class Solution {
 public:
     int ladderLength(string start, string end, unordered_set<string> &dict) {
         if(start == end) return 0;
-        if(start.size() != end.size()) return 0;
         
         // use queue for BFS, store word string and their distance from start
         queue<pair<string, int> > que;
@@ -117,22 +116,22 @@ public:
             que.pop();
             
             // branching factor of BFS is 26 characters * string size
-            for(int i=0; i<str.size(); i++)
-            for(char c='a'; c<='z'; c++) {
-                char chi = str[i];
-                str[i] = c;
+            for(int i=0; i<str.size(); i++) {
+                char w = str[i];
+                for(char c='a'; c<='z'; c++) {
+                    if(w == c) continue;
+                    str[i] = c;
+                    if(str == end) return len+1;
                 
-                if(str == end) return len+1;
-                
-                // use count instead of find to make searching faster
-                if(dict.count(str) != 0) {
-                    que.push(make_pair(str, len+1));
-                    // erase the appeared words from dictionary can save search time
-                    dict.erase(str);
-                    if(dict.empty()) break;
+                    // use count instead of find to make searching faster
+                    if(dict.count(str) != 0) {
+                        que.push(make_pair(str, len+1));
+                        // erase the appeared words from dictionary can save search time
+                        dict.erase(str);
+                        if(dict.empty()) break;
+                    }
                 }
-                
-                str[i] = chi;
+                str[i] = w; // recover character
             }
         }
         return 0;
@@ -141,88 +140,78 @@ public:
 
 //=======================================================================
 // Word Ladder II
-// uses 668 milli secs for large judge
+// uses 588 milli secs for large judge
 // for word length k, and searching in dictionary takes O(1), and the depth of trasation is d
+// branching factor of BFS is 26 characters * string size, better than searching all dictionary
 // time complexity is O((k*26)^d), space complexity is O((k*26)^d)
+
 class Solution {
-    // function to generate path using backtracking method
+    // recursive function to generate path using backtracking method
     void gen(int v1, int v2, vector<string> &vdict, vector<vector<int> >& prev, 
              vector<int>& path, vector<vector<string> >&ans){
-             
         path.push_back(v2); // push the nodes into path for back tracking
         
-        if(v2 == v1 and path.size() > 1){
+        if(v2 == v1) { // translate the path of index to string in reverse order
             ans.push_back(vector<string>());
-            // translate the path of index to string in reverse order
-            for(auto rit = path.rbegin(); rit != path.rend(); rit++)
+            for(auto rit=path.rbegin(); rit!=path.rend(); rit++)
                 ans.back().push_back(vdict[*rit]);
-        }else{
-            // gengrate all possible path in recursive way
-            for(int i = 0; i < prev[v2].size(); i++)
-                gen(v1, prev[v2][i], vdict, prev, path, ans);
+        } else { // gengrate all possible path in recursive way
+            for(auto it=prev[v2].begin(); it!=prev[v2].end(); it++)
+                gen(v1, *it, vdict, prev, path, ans);
         }
         
         path.pop_back(); // pop the nodes from path for back tracking
     }
+    
 public:
+    // translate problem to graph search, use interger instead of string to avoid string copy & match
+    // use BFS to find path from start to end, and translate back to string at the end
     vector<vector<string> > findLadders(string start, string end, unordered_set<string> &dict) {
         dict.insert(start);
         dict.insert(end);
         
-        vector<string> vdict(dict.begin(), dict.end()); // vector dictionary: id -> word mapping in dict
-        unordered_map<string, int> ids;  // index dictionary: word -> id mapping in vdict
+        unordered_map<string, int> imap;  // word mapping: word -> id mapping in vdict
+        vector<string> vdict(dict.begin(), dict.end()); // vector of dictionary: id -> word mapping in dict
         vector<vector<int> > prev(dict.size()); // store the previous words in BFS
-        vector<int> distance(dict.size(), -1); // store the distance from start
+        vector<int> len(dict.size(), -1); // store the distance from start
         
-        // build string - index mapping, transfer problem to graph search
-        // use interger instead of string to eliminate cost of string matching
-        for(int i = 0; i < vdict.size(); i++)
-            ids[vdict[i]] = i;
+        imap.reserve(vdict.size());
+        for(int i=0; i<vdict.size(); i++) // build string - index mapping
+            imap[vdict[i]] = i;
         
-        // find the index of start and end words
-        int vstr=0, vend=0;
-        while(vdict[vstr] != start) vstr++;
-        while(vdict[vend] != end) vend++;
-        
-        // use queue for BFS to search path from start to end
-        queue<int> que;
+        int vstr=imap[start], vend=imap[end]; // find the index of start and end words
+        queue<int> que; // queue for BFS to search path from start to end
         que.push(vstr);
-        distance[vstr]=0;
+        len[vstr] = 1; // mark distance of start
         
-        while(not que.empty()){
+        
+        
+        while(not que.empty()) {
             int v1 = que.front(); que.pop();
             if(v1 == vend) break;
-            int d = distance[v1] + 1;
             
-            // get adjancent list of the words, branching factor of BFS is 26 characters * string size
-            vector<int> adj;
-            // erase the appeared words from dictionary can save search time
-            ids.erase(vdict[v1]);
+            imap.erase(vdict[v1]); // erase the appeared words from dictionary can save search time
             
-            // find all the words that can be transfered in 1 step
-            for(int j = 0; j < vdict[v1].size(); j++){
+            // find all words that can be transfered in 1 step
+            // if multiple words can reach the same words, save all the adjancent words
+            for(int j=0; j<vdict[v1].size(); j++) { // branching factor = 26 characters * string size
                 char w = vdict[v1][j];
-                for(char c = 'a'; c <= 'z'; c++){
+                for(char c = 'a'; c <= 'z'; c++) {
                     vdict[v1][j] = c;
-                    if(ids.count(vdict[v1]))
-                        adj.push_back(ids[vdict[v1]]);
-                    vdict[v1][j] = w;
-                }
-            }
-            
-            // use BFS to calculate path to end, add new words (distance=-1) into queue
-            // if multiple words can reach the same words, save all the words
-            for(int i = 0; i < adj.size(); i++){
-                int v = adj[i];
-                if(distance[v] == -1){
-                    prev[v].push_back(v1);
-                    distance[v] = d;
-                    que.push(v);
-                }else if(distance[v] == d){
-                    prev[v].push_back(v1);
-                }
-            }
-        }
+                    if(imap.count(vdict[v1])) {
+                        int v = imap[vdict[v1]];
+                        if(len[v] == -1) { // found new words (len=-1), add to queue
+                            prev[v].push_back(v1);
+                            len[v] = len[v1] + 1;
+                            que.push(v);
+                        } else if(len[v] == len[v1] + 1) { // words that already found
+                            prev[v].push_back(v1);
+                        }
+                    }
+                } // end of: for(char c = 'a'; c <= 'z'; c++)
+                vdict[v1][j] = w;
+            } // end of: for(int j = 0; j < vdict[v1].size(); j++)
+        } // end of: while(not que.empty())
 
         // generate the full sting path using the index
         vector<vector<string> > ans;

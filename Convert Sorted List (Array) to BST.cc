@@ -35,6 +35,7 @@ Return Balanced Binary Search Tree:
          0   2 4
 */
 
+/*
               50
             /   \
          24       75
@@ -49,7 +50,8 @@ Return Balanced Binary Search Tree:
   2        8
  1 4      7  9
 0 # 3 #  6 # # # 
- 
+*/
+
 #include <stdio.h>
 #include <iostream>
 #include <vector>
@@ -81,21 +83,23 @@ public:
     TreeNode *sortedListToBST(ListNode *head) {
         if(!head) return NULL;
         
-        vector<int> num;
-        while(head!=NULL) {
-            num.push_back(head->val);
-            head = head->next;
-        }
+        int len=0;
+        for(ListNode *p=head; p!=NULL; p=p->next) ++len;
+        if(len==1) return new TreeNode(head->val);
         
-        return sortedArrayToBST(num);
+        ListNode *prev=head;
+        for(int i=0; i<len/2-1; ++i) prev=prev->next;
+        
+        TreeNode *root = new TreeNode(prev->next->val);
+        root->right = sortedListToBST(prev->next->next);
+        prev->next = NULL;
+        root->left = sortedListToBST(head);
+        return root;
     }
     
-    TreeNode *sortedArrayToBST(vector<int> &num) {
-        if(num.empty()) return NULL;
-        return sortedArrayToBST(num, 0, num.size());
-    }
-    
-    TreeNode *sortedArrayToBST(vector<int> &num, int start, int end) {
+    TreeNode *sortedArrayToBST(vector<int> &num, int start=0, int end=-1) {
+        if(num.size()==0) return NULL;
+        if(end==-1) end = num.size();
         if(start >= end) return NULL;
         if(start == end-1) return new TreeNode(num[start]);
         TreeNode *root = new TreeNode(num[(start+end)/2]);

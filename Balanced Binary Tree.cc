@@ -28,21 +28,15 @@ public:
     }
     
     // get belance tree height
-    int getTreeHeight(TreeNode *root)
-    {
-        int height = 0;
+    int getTreeHeight(TreeNode *root) {
+        if(root==NULL) return 0;
         
-        if(root!=NULL)
-        {
-            int lh = getTreeHeight(root->left);
-            int rh = getTreeHeight(root->right);
-            
-            if(lh-rh>1 || rh-lh>1 || lh==-1 || rh==-1)
-                height = -1; // unbalanced
-            else
-                height = ((lh>rh)?lh:rh) + 1;
-        };
+        int lh = getTreeHeight(root->left);
+        if(lh==-1) return -1;
+        int rh = getTreeHeight(root->right);
+        if(rh==-1) return -1;
         
-        return height;
+        if(lh-rh>1 || rh-lh>1) return -1; // unbalanced
+        return max(lh, rh) + 1;
     }
 };

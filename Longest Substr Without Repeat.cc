@@ -28,3 +28,31 @@ public:
         }
     }
 };
+
+
+// version 2, use sliding window
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        if(s.size()==0) return 0;
+        
+        vector<int> found(256, 0); // number of char found
+        int repeat = 0; // number of repeat char
+        int start=0, end=0, maxlen=0;
+        
+        while(end<s.size())
+            if(repeat==0) {
+                if(found[s[end]]==1) ++repeat;
+                ++found[s[end]];
+                ++end;
+                if(repeat==0) maxlen = max(maxlen, end-start);
+            } else {
+                if(found[s[start]]==2) --repeat;
+                --found[s[start]];
+                ++start;
+            }
+        
+        return maxlen;
+    }
+};

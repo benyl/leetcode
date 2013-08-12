@@ -36,6 +36,7 @@ struct TreeNode {
 
 // ===============================================
 // Recursive version
+// time complexity: o(n), space complexity: log(n) in stack, o(n) in result
 class Solution {
 public:
     vector<int> inorderTraversalTrial(TreeNode *root) {
@@ -52,6 +53,7 @@ public:
 
 // ===============================================
 // Iterative version
+// time complexity: o(n), space complexity: log(n) in stack, o(n) in result
 class Solution {
 public:
     vector<int> inorderTraversal(TreeNode *root) {
@@ -76,6 +78,37 @@ public:
     }
 };
 
+
+// ================================================
+// Iterative version II (morris method, threading traversal)
+// time complexity: o(n), space complexity: o(1) in function, o(n) in result
+
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode *root) {
+        vector<int> result;
+        TreeNode *p = root;
+        while(p!=NULL) {
+            if(p->left==NULL) {
+                result.push_back(p->val);
+                p = p->right;
+            } else {
+                TreeNode *prev = p->left;
+                while(prev->right!=NULL && prev->right!=p)
+                    prev = prev->right;
+                if(prev->right==NULL) {
+                    prev->right = p;
+                    p = p->left;
+                } else {
+                    result.push_back(p->val);
+                    prev->right = NULL;
+                    p = p->right;
+                }
+            }
+        }
+        return result;
+    }
+};
 
 // ------------------------------------------------
 // test code
