@@ -45,15 +45,15 @@ If S = [1,2,2], a solution is:
 ]
 */
 
-#include<stdio.h>
-#include<vector>
-#include<iostream>
-#include<algorithm>
-
-using namespace std;
+// ======================================================
+// recursive version, top down approach
+// ======================================================
 
 class Solution {
 public:
+
+    // ======================================================
+    // Subsets I
     vector<vector<int> > subsets(vector<int> &S) {
         vector<vector<int> > result;
         if(S.size() == 0) {
@@ -86,6 +86,10 @@ public:
     } // end of: vector<vector<int> > subsets(vector<int> &S)
     
     
+    
+    
+    // ======================================================
+    // Subsets II
     vector<vector<int> > subsetsWithDup(vector<int> &S) {
         vector<vector<int> > result;
         if(S.size() == 0) {
@@ -124,33 +128,84 @@ public:
     }
 };
 
-template <class T>
-void PrintVec(vector<T> vec)
-{
-  for(int i=0; i<vec.size(); i++)  
-  {
-    cout << vec[i];
-    if(i!=vec.size()-1)
-      cout << ", ";
-  }
-  cout << endl;
-}
 
-int main()
-{
-  int inputArray[] = {1,2,3};
-  vector<int> input(inputArray,end(inputArray));
+// ======================================================
+// iterative version, bottom up approach
+// ======================================================
 
-  Solution s;
-  vector<vector<int> > result1 = s.subsets(input);
+class Solution {
+public:
 
-  cout << endl << "result1: [" << endl;
-  for(int i=0; i<result1.size(); i++)
-  {
-    cout << " ";
-    PrintVec<int>(result1[i]);
-  }
-  cout << "]" << endl;
-  getchar();
-  return 0;
-}
+    // ======================================================
+    // Subsets I
+    vector<vector<int> > subsets(vector<int> &S) {
+        if(S.size()==0) return vector<vector<int> > ();
+        
+        sort(S.begin(), S.end()); // sort S before getting result
+        
+        vector<vector<int> > result;
+        vector<int> range; // result in [range[i-1] ~ range[i]-1] contains i numbers
+            
+        result.push_back(vector<int>()); // put empty set at first
+        range.push_back(result.size()); // result[0] contains 0 number
+        
+        for(int i=0; i<S.size(); ++i) // generate subsets that contains only one number
+            result.push_back(vector<int>(1, S[i]));
+        range.push_back(result.size()); // result[1 ~ S.size()] contains 1 number
+            
+        // get subsets in botton up approach
+        for(int i=2; i<=S.size(); ++i) { // generate subsets that contains i numbers
+            for(int j=range[i-2]; j<range[i-1]; ++j) // get the results that contains i-1 numbers
+                for(int k=S.size()-1; k>=0; --k) { 
+                    if(S[k] <= result[j].back()) break; // only put numbers bigger then last one
+                    result.push_back(result[j]);
+                    result.back().push_back(S[k]); // construct new subsets base on previous result
+                }
+            range.push_back(result.size()); // save the ranges of result that contains i numbers
+        }
+        
+        return result;
+    }
+    
+    
+    // ======================================================
+    // Subsets II
+    vector<vector<int> > subsetsWithDup(vector<int> &S) {
+        if(S.size() == 0) return vector<vector<int> >();
+        
+        sort(S.begin(), S.end()); // sort S before getting result
+        
+        vector<vector<int> > result;
+        vector<int> unique, num, range; // result in [range[i-1] ~ range[i]-1] contains i UNIQUE numbers
+        
+        for(int i=0; i<S.size(); ++i) {
+            if(i==0 || S[i]!=S[i-1]) {
+                unique.push_back(S[i]); // store the unique numbers in S
+                num.push_back(0); // count the unique numbers in S
+            }
+            num.back()++;
+        }
+        
+        result.push_back(vector<int>()); // put empty set at first
+        range.push_back(result.size()); // result[0] contains 0 number
+        
+        for(int i=0; i<unique.size(); ++i) // generate subsets that contains only one UNIQUE number
+            for(int j=0; j<num[i]; ++j) // unique[i] can repeat 1 ~ num[i] times
+                result.push_back(vector<int>(j+1, unique[i]));
+        range.push_back(result.size()); // save the ranges of result that contains one UNIQUE number
+        
+        for(int i=2; i<=unique.size(); ++i) { // generate subsets that contains i UNIQUE numbers
+            for(int j=range[i-2]; j<range[i-1]; ++j) // get the results that contains i-1 UNIQUE numbers
+                for(int k=unique.size()-1; k>=0; --k) {
+                    if(unique[k]<=result[j].back()) break; // only put numbers bigger then last one
+                    vector<int> temp = result[j];
+                    for(int l=0; l<num[k]; ++l) {
+                        temp.push_back(unique[k]); // construct new subsets base on previous result
+                        result.push_back(temp);
+                    }
+                }
+            range.push_back(result.size()); // save the ranges of result that contains i numbers
+        }
+        return result;
+    }
+};

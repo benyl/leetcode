@@ -26,10 +26,10 @@ class Solution {
 public:
     ListNode *reverseBetween(ListNode *head, int m, int n) {
         // add a dummy head before head
-        ListNode *dhead = new ListNode(0);
-        dhead->next = head;
+        ListNode *pre = new ListNode(0);
+        pre->next = head;
+        head = pre;
         
-        ListNode *pre = dhead; // node before reverse part
         // find the node before reverse part
         while(m!=1) {
             pre = pre->next;
@@ -51,9 +51,9 @@ public:
         // link the last node to the rest of the linked list
         last->next = curr;
         
-        // remove dummy head
-        head = dhead->next;
-        delete dhead;
-        return head;
+        // remove dummy head and reaturn real head
+        pre = head->next;
+        delete head;
+        return pre;
     }
 };

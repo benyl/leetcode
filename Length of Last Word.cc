@@ -34,3 +34,20 @@ public:
         return last;
     }
 };
+
+// =========================================================
+class Solution {
+public:
+    int lengthOfLastWord(const char *s) {
+        if(s==NULL) return 0;
+        int lastword=0;
+        
+        for(;*s!='\0';++s)
+            if(*s!=' ')
+                lastword++;
+            else if(*(s+1) != '\0' && *(s+1)!=' ')
+                lastword=0;
+                
+        return lastword;
+    }
+};

@@ -87,3 +87,33 @@ public:
     }
 };
 
+// =================================================================
+// simple version
+class Solution {
+public:
+    bool isScramble(string s1, string s2) {
+        if(s1 == s2) return true;
+        if(s1.size() != s2.size()) return false;
+        if(!isAnagram(s1,s2)) return false;
+        
+        for(int i=1; i<s1.size(); ++i)
+            if(isScramble(s1.substr(0, i), s2.substr(0, i)) &&
+                isScramble(s1.substr(i), s2.substr(i)))
+                return true;
+                
+        for(int i=1; i<s1.size(); ++i)
+            if(isScramble(s1.substr(0, i), s2.substr(s1.size()-i)) &&
+                isScramble(s1.substr(i), s2.substr(0, s1.size()-i)))
+                return true;
+    }
+    
+    bool isAnagram(string s1, string s2) {
+        if(s1.size() != s2.size()) return false;
+        vector<int> found(256);
+        for(int i=0; i<s1.size(); ++i) ++found[s1[i]];
+        for(int i=0; i<s2.size(); ++i) --found[s2[i]];
+        for(int i=0; i<256; ++i) 
+            if(found[i]!=0) return false;
+        return true;
+    }
+};

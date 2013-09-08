@@ -33,42 +33,73 @@ The minimum number of jumps to reach the last index is 2.
 (Jump 1 step from index 0 to 1, then 3 steps to the last index.)
 */
 
+// ============================================================
+// version 1
+// using dynamic programming
+// time complexity o(n), space complexity o(n)
 class Solution {
 public:
+    // ============================================================
     // Jump Game
     bool canJump(int A[], int n) {
-        if(n==1) return true;
-        vector<bool> reach (n, false);  // remember if this place is reachable
-        int last = 0;                   // record the last index that can reach now
+        vector<bool> reach (n, false); // remember if this place is reachable
+        int maxJump = 1; // record the last index that can reach now
+        reach[0] = true; // initialize: #0 can be reach
         
-        reach[0] = true;
-        
-        // using dynamic programming
-        for(int i=0; i<n; i++) {
-            if(!reach[i]) break;
-            while(last<i+A[i]) {
-                ++last;
-                reach[last] = true;
-                if(last==n-1) break;
-            }
-        }
+        for(int i=0; i<n && reach[i] && maxJump<n; ++i) // stop if #i can't be reach or reach #n
+            while(maxJump<=A[i]+i && maxJump<n)
+                reach[maxJump++] = true;  // mark reach and increase the last index that can be reached
+                
         return reach[n-1];
     }
     
+    // ============================================================
     // Jump Game II
     int jump(int A[], int n) {
-        if(n==1) return 0;
+        vector<int> minStep (n, -1);    // remember the step to each place
+        int maxJump = 1; // record the last index that can reach now
+        minStep[0] = 0; // initialize: #0 can be reach in 0 step
         
-        vector<int> step (n, 0);    // remember the step to each place
-        int last = 0;               // record the last index that can reach now
-        
-        // using dynamic programming
-        for(int i=0; i<n; i++) {
-            while(last<i+A[i]) {
-                ++last;
-                step[last] = step[i] + 1;
-                if(last==n-1) return step[last];
+        for(int i=0; i<n && i<=maxJump && maxJump<n; ++i) // stop if #i can't reach or reach #n
+            while(maxJump<=A[i]+i && maxJump<n)
+                minStep[maxJump++] = minStep[i] + 1; // save steps and increase the last index that can be reached
+
+        return minStep[n-1];
+    }
+};
+
+
+// ==============================================
+// Jump Game
+// version 2
+// time complexity o(n), space complexity o(1)
+
+class Solution {
+public:
+    bool canJump(int A[], int n) {
+        int maxJump = 0; // record the last index that can reach now
+        for(int i=0; i<n && i<=maxJump && maxJump<n; ++i)  // stop if #i can't be reach or reach #n
+                maxJump = max(A[i] + i, maxJump); // increase the last index that can be reached
+        return (maxJump >= n-1);
+    }
+};
+
+// ==============================================
+// Jump Game II
+// version 2
+// time complexity o(n), space complexity o(1)
+
+class Solution {
+public:
+    int jump(int A[], int n) {
+        int thisStep=0, nextStep=0, step=0;  
+        for(int i=0; i<n && nextStep<n; ++i) { // stop if reach #n
+            if(i>thisStep) { // if exceed the last index of this step, go to nextstep
+                ++step;
+                thisStep = nextStep; // record the last index that can reach in this step
             }
+            nextStep = max(A[i] + i, nextStep); // record the last index that can reach in next step
         }
+        return (thisStep<n-1) ? step+1 : step; // corner case: if already reach #n in this step
     }
 };

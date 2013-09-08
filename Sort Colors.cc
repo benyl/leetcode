@@ -39,3 +39,31 @@ public:
         
     }
 };
+
+// ====================================================
+#define RED 0
+#define WHITE 1
+#define BLUE 2
+
+class Solution {
+public:
+    void sortColors(int A[], int n) {
+        int r=-1, w=-1, b=-1; // end of red, white, blue
+        while(b<n-1) {
+            switch(A[b+1]) {
+                case RED:
+                    A[++b] = BLUE;
+                    A[++w] = WHITE;
+                    A[++r] = RED;
+                    break;
+                case WHITE:
+                    A[++b] = BLUE;
+                    A[++w] = WHITE;
+                    break;
+                case BLUE:
+                    A[++b] = BLUE;
+                    break;
+            }
+        }
+    }
+};

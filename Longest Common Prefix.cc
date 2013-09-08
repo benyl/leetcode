@@ -51,3 +51,25 @@ void main()
   cout << sol.longestCommonPrefix(strs) << endl;
   getchar();
 }
+
+
+// ============================================================
+class Solution {
+public:
+    string longestCommonPrefix(vector<string> &strs) {
+        if(strs.size() == 0) return "";
+        if(strs.size() == 1) return strs[0];
+        size_t len = strs[0].size();
+        
+        for(int i=1; i<strs.size(); ++i) {
+            len = min(len, strs[i].size());
+            int l = 0;
+            while(strs[0][l]==strs[i][l] && l<len)
+                ++l;
+            len = l;
+            if(len==0) break;
+        }
+        
+        return strs[0].substr(0, len);
+    }
+};

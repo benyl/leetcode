@@ -16,3 +16,16 @@ public:
         else return x * pow(x*x, (n-1)/2);
     }
 };
+
+// =========================================================
+
+class Solution {
+public:
+    double pow(double x, int n) {
+        if(x==1 || n==0) return 1;
+        if(n==INT_MIN) return 1/pow(x,INT_MAX)/x;
+        if(n<0) return 1/pow(x,-1*n);
+        
+        return pow(x*x,n/2) * ((n%2) ? x : 1);
+    }
+};

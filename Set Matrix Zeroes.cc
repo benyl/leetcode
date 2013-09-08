@@ -35,38 +35,33 @@ public:
 
     // version 2, use constant space
     void setZeroes(vector<vector<int> > &matrix) {
-        int zerorow = matrix.size();
-        int zerocol = matrix[0].size();
+        if(!matrix.size() || !matrix[0].size()) return;
+        
+        int zerorow = -1, zerocol = -1;
+        
+        for(int i=0; i<matrix.size() && zerorow==-1; i++)
+        for(int j=0; j<matrix[0].size() && zerorow==-1; j++)
+            if(matrix[i][j]==0) {
+                zerorow = i;
+                zerocol = j;
+            }
+        
+        if(zerorow == -1) return;
         
         for(int i=0; i<matrix.size(); i++)
         for(int j=0; j<matrix[0].size(); j++)
             if(matrix[i][j]==0) {
-                zerorow = i;
-                zerocol = j;
-                break;
-                }
-        
-        if(zerorow == matrix.size()) return;
-        
-        
-        for(int i=0; i<matrix.size(); i++)
-        for(int j=0; j<matrix[0].size(); j++)
-            if(i!=zerorow && j!=zerocol && matrix[i][j]==0) {
                 matrix[zerorow][j] = 0;
                 matrix[i][zerocol] = 0;
             }
         
         for(int i=0; i<matrix.size(); i++)
         for(int j=0; j<matrix[0].size(); j++)
-            if(i!=zerorow && j!=zerocol) {
-                if(matrix[zerorow][j]==0) matrix[i][j]=0;
-                if(matrix[i][zerocol]==0) matrix[i][j]=0;
-            }
+            if(i!=zerorow && j!=zerocol && 
+               (!matrix[i][zerocol] || !matrix[zerorow][j]))
+                matrix[i][j]=0;
             
-        for(int i=0; i<matrix.size(); i++)
-            matrix[i][zerocol]=0;
-            
-        for(int j=0; j<matrix[0].size(); j++)
-            matrix[zerorow][j]=0;
+        for(int i=0; i<matrix.size(); i++) matrix[i][zerocol]=0;
+        for(int j=0; j<matrix[0].size(); j++) matrix[zerorow][j]=0;
     }
 };

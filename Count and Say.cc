@@ -62,3 +62,29 @@ void main()
     
     getchar();
 }
+
+
+// =================================================
+// compact version using std::to_string(int x)
+
+class Solution {
+public:
+    string countAndSay(int n) {
+        string say = "1";
+        while(--n>0){
+            string next = "";
+            int count = 1;
+            for(int i=1; i<say.size(); ++i) {
+                if(say[i]!=say[i-1]) {
+                    next += to_string(count) + say[i-1];
+                    count = 0;
+                }
+                ++count;
+            }
+            next += to_string(count) + say.back();
+            say = next;
+        }
+        
+        return say;
+    }
+};

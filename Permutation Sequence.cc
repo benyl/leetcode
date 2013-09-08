@@ -51,3 +51,26 @@ public:
         return ss.str();
     }
 };
+
+// ====================================================
+// shorter version
+class Solution {
+public:
+    string getPermutation(int n, int k) {
+        vector<int> fac(n, 1); // factor of i
+        vector<int> num(n, 1); // candidate numbers
+        for(int i=1; i<n; ++i) {
+            num[i] = i+1;
+            fac[i] = i * fac[i-1];
+        }
+        --k; // index start from 0
+        string result;
+        for(int i=n-1; i>=0; --i) {
+            int idx = k / fac[i]; // quotient
+            k %= fac[i];          // remainder
+            result += ('0' + num[idx]);
+            num.erase(num.begin() + idx);
+        }
+        return result;
+    }
+};

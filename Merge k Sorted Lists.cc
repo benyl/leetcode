@@ -55,3 +55,28 @@ public:
         return head;
     }
 };
+
+// version 2
+class Solution {
+public:
+    ListNode *mergeKLists(vector<ListNode *> &lists) {
+        if(lists.size()==0) return NULL;
+        
+        ListNode *head = new ListNode(0), *tail = head;
+        while(true) {
+            int min = -1, empty = 0;
+            for(int i=0; i<lists.size(); ++i)
+                if(lists[i]==NULL)
+                    ++empty;
+                else if(min==-1 || lists[i]->val < lists[min]->val)
+                    min = i;
+            if(empty == lists.size()) break;
+            tail->next = lists[min];
+            tail = tail->next;
+            lists[min] = lists[min]->next;
+            if(empty == lists.size()-1) break;
+        }
+        
+        return head->next;
+    }
+};

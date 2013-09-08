@@ -13,13 +13,25 @@ public:
     int removeElement(int A[], int n, int elem) {
         while(A[n-1]==elem && n>0) n--;
         
-        for(int i=0; i<n; i++)
+        for(int i=0; i<n; ++i)
             if(A[i]==elem) {
-                A[i]=A[n-1];
-                n--;
-                while(A[n-1]==elem && n>0) n--;
+                A[i]=A[--n];
+                while(A[n-1]==elem && n>0) --n;
             }
             
         return n;
+    }
+};
+
+
+//===================================================
+class Solution {
+public:
+    int removeElement(int A[], int n, int elem) {
+        int m=0;
+        for(int i=0; i<n; ++i)
+            if(A[i] != elem)
+                A[m++]=A[i];
+        return m;
     }
 };

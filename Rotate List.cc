@@ -31,15 +31,11 @@ public:
             tail = tail->next;
         }
         
-        // return head if not need to rotate
-        k %= length;
-        if(k == 0) return head;
-        
         // connect the tail to head
         tail->next = head;
         
-        // rotate the list to the k-th node
-        for(int i=0; i<length-k; ++i)
+        // rotate the list rigth to the k-th node
+        for(k = length - k % length; k>0; --k)
             tail = tail->next;
         
         // cut the list at tail

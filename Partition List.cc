@@ -63,3 +63,44 @@ public:
         return head;
     }
 };
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *partition(ListNode *head, int x) {
+        // p1 is end of nodes smaller than x, p2 is end of nodes greater than or equal to x
+        ListNode *p1=head, *p2=head;
+        
+        head = new ListNode(0); // add a dummy head before head
+        head->next=p1;
+        p1=p2=head;
+        
+        while(p2->next!=NULL) {
+            if(p2->next->val<x) { // if val < x, move current node after p1
+                if(p2==p1) { // if p2==p1, no nodes greater than or equal to x
+                    p1=p1->next;
+                    p2=p2->next;
+                } else { // move current node after p1
+                    ListNode *temp= p2->next;
+                    p2->next = temp->next;
+                    temp->next = p1->next;
+                    p1->next = temp;
+                    p1 = p1->next;
+                }
+            } else { // if val >= x, move current node after p2 (= do nothing)
+                p2=p2->next;
+            }
+        }
+        
+        p1 = head->next;
+        delete head; // remove dummy head
+        return p1;
+    }
+};
