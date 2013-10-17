@@ -68,3 +68,14 @@ public:
                isValidBST(root->right, root->val, max);
     }
 };
+
+
+// version 2
+class Solution {
+public:
+    bool isValidBST(TreeNode *root, TreeNode *min=NULL, TreeNode *max=NULL) {
+        if(!root) return true;
+        if((min && root->val <= min->val) || (max && root->val >= max->val)) return false;
+        return isValidBST(root->left, min, root) && isValidBST(root->right, root, max);
+    }
+};

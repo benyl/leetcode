@@ -70,27 +70,23 @@ public:
 
 
 // ==============================================
-// Jump Game
 // version 2
+// using dynamic programming
 // time complexity o(n), space complexity o(1)
 
 class Solution {
 public:
+    // ============================================================
+    // Jump Game
     bool canJump(int A[], int n) {
         int maxJump = 0; // record the last index that can reach now
         for(int i=0; i<n && i<=maxJump && maxJump<n; ++i)  // stop if #i can't be reach or reach #n
                 maxJump = max(A[i] + i, maxJump); // increase the last index that can be reached
         return (maxJump >= n-1);
     }
-};
 
-// ==============================================
-// Jump Game II
-// version 2
-// time complexity o(n), space complexity o(1)
-
-class Solution {
-public:
+    // ==============================================
+    // Jump Game II
     int jump(int A[], int n) {
         int thisStep=0, nextStep=0, step=0;  
         for(int i=0; i<n && nextStep<n; ++i) { // stop if reach #n

@@ -15,49 +15,42 @@ return [3, 4].
 */
 
 
+// ==========================================================
+// use binary search
+// 60 milli secs pass large judge
+// time complexity o(n), space complexity o(1)
+
 class Solution {
 public:
     vector<int> searchRange(int A[], int n, int target) {
-        vector<int> result(2,-1);
-        if(A[0]>target) return result;
-        if(A[n-1]<target) return result;
+        vector<int> result(2, -1);
         
-        // find the lower bound
-        if(A[0]==target) result[0]=0;
-        else {
-            int imin=0, imax=n;
-            while(imin<=imax){
-                int imid=(imin+imax)/2;
-                    
-                if(A[imid]<target)
-                    imin = imid + 1;
-                else if(A[imid]>target)
-                    imax = imid - 1;
-                else if(imid==0)
-                    {result[0]=0;break;}
-                else if(A[imid-1]!=target)
-                    {result[0]=imid;break;}
-                else imax = imid - 1;
-            }
+        // search lower bound
+        for(int start=0, end=n-1; start<=end; ) {
+            int mid = (start+end)/2;
+            if(A[mid]<target)
+                start = mid+1;
+            else if(A[mid]>target)
+                end = mid-1;
+            else if (mid==0 || A[mid-1]<target) // Lower bound
+                { result[0] = mid; break; }
+            else // A[mid-1] == A[mid] == target, jump left
+                end = mid-1;
         }
         
-        // find the upper bound
-        if(A[n-1]==target) result[1]=n-1;
-        else {
-            int imin=0, imax=n;
-            while(imin<=imax){
-                int imid=(imin+imax)/2;
-                    
-                if(A[imid]<target)
-                    imin = imid + 1;
-                else if(A[imid]>target)
-                    imax = imid - 1;
-                else if(imid==n-1)
-                    {result[1]=n-1;break;}
-                else if(A[imid+1]!=target)
-                    {result[1]=imid;break;}
-                else imin = imid + 1;
-            }
+        if(result[0] == -1) return result;
+        
+        // search upper bound
+        for(int start=result[0], end=n-1; start<=end; ) {
+            int mid = (start+end)/2;
+            if(A[mid]<target)
+                start = mid+1;
+            else if(A[mid]>target)
+                end = mid-1;
+            else if (mid==n-1 || A[mid+1]>target) // Upper bound
+                { result[1] = mid; break; }
+            else // A[mid+1] == A[mid] == target, jump right
+                start = mid+1;
         }
         
         return result;

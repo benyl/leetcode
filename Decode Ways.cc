@@ -17,49 +17,40 @@ Given encoded message "12", it could be decoded as "AB" (1 2) or "L" (12).
 The number of ways decoding "12" is 2.
 
 */
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <sstream>
-using namespace std;
 
-
+// recursive version, Time Limit Exceeded
 class Solution {
 public:
     int numDecodings(string s) {
-        if(s == "") return 0;
-        if(valid(s.substr(0,1)) == 0) return 0;
+        if(s.size()<1) return 0;
+        if(s[0]<='0' || s[0]>'9') return 0;
+        if(s.size()==1) return 1;
+        
+        int num = numDecodings(s.substr(1));
+        if(s[0]=='1' || (s[0]=='2' && s[1]<='6'))
+            num += (s.size()==2) ? 1: numDecodings(s.substr(2));
+        
+        return num;
+    }
+};
 
+
+// use dynamic programming
+class Solution {
+public:
+    int numDecodings(string s) {
+        if(s.size()<1 || s[0]=='0') return 0;
+        
         int sum1=1, sum2=1;
-        for(int i=1; i<s.size(); i++) {
+        for(int i=1; i<s.size(); ++i) {
             int sum = 0;
-            if(valid(s.substr(i-1,2))) sum +=sum1;
-            if(valid(s.substr(i,1))) sum +=sum2;
-            if(sum == 0) return sum;
+            if(s[i-1]=='1' || (s[i-1]=='2' && s[i]<='6')) sum += sum1;
+            if(s[i]!='0') sum += sum2;
+            if(sum == 0) return 0;
             sum1 = sum2;
             sum2 = sum;
         }
         
         return sum2;
     }
-    
-    bool valid(string s) {
-        if(s=="" || s.size()>2) return false;
-        if(s[0]=='0') return false;
-        stringstream s_str(s);
-        int x;
-        s_str >> x;
-        if(x>0 && x<27) return true;
-        else return false;
-    }
 };
-
-void main()
-{
-    Solution sol;
-    
-    string s1 = "227";
-    cout << sol.numDecodings(s1) << endl;
-    
-    getchar();
-}

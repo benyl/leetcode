@@ -17,35 +17,33 @@ Given height = [2,1,5,6,2,3],
 return 10.
 */
 
+// use dynamic programming
+// 88 milli secs pass large set
+// time complexity o(n), space complexity o(n)
 class Solution {
 public:
     int largestRectangleArea(vector<int> &height) {
         vector<int> left  (height.size(), 0);
         vector<int> right (height.size(), height.size());
-        int maxarea = 0;
         
         // from left to right, for each bar, find the left bound containing this bar
         for(int i=1; i<height.size(); i++) {
             left[i] = i;
-            while(left[i]!=0 && height[left[i]-1]>=height[i]) {
+            while(left[i]!=0 && height[left[i]-1]>=height[i])
                 left[i] = left[left[i]-1];
-            }
         }
         
         // from right to left, for each bar, find the right bound containing this bar
         for(int i=height.size()-2; i>=0; i--) {
             right[i] = i+1;
-            while(right[i]!=height.size() && height[right[i]]>=height[i]) {
+            while(right[i]!=height.size() && height[right[i]]>=height[i])
                 right[i] = right[right[i]];
-            }
         }
         
         // calculate area of each rectangle
-        for(int i=0; i<height.size(); i++) {
-            int area = (right[i] - left[i]) * height[i];
-            maxarea = (area > maxarea) ? area : maxarea;
-        }
-        
+        int maxarea = 0;
+        for(int i=0; i<height.size(); i++)
+            maxarea = max(maxarea, height[i] * (right[i] - left[i]));
         return maxarea;
     }
 };

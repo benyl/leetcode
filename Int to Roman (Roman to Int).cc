@@ -17,53 +17,78 @@ Given a roman numeral, convert it to an integer.
 Input is guaranteed to be within the range from 1 to 3999.
 */
 
+// =======================================================================
+// Integer to Roman
+// 128 milli secs pass large judge
+
 class Solution {
 public:
     string intToRoman(int num) {
-        if(num<0 || num>3999) return string("");
+        string roman = "";
+        char *symbol = "IVXLCDM"; // I, V, X, L, C, D, M
+        if(num >= 4000) num %= 4000;
         
-        return digitSymbol(num, 1000, ' ', ' ', 'M') + 
-               digitSymbol(num, 100,  'M', 'D', 'C') + 
-               digitSymbol(num, 10,   'C', 'L', 'X') + 
-               digitSymbol(num, 1,    'X', 'V', 'I');
+        for(int x=num%10; num>0; num/=10, symbol+=2, x=num%10) {
+            if(num==0) {
+                break;
+            } else if(x==0) {
+                continue;
+            } else if(x<4) { // I, II, III
+                roman.insert(roman.begin(), x, symbol[0]);
+            } else if(x==4) { // IV
+                roman = symbol[0] + (symbol[1] + roman);
+            } else if(x<9){ // V, VI, VII, VIII
+                roman.insert(roman.begin(), x-5, symbol[0]);
+                roman = symbol[1] + roman;
+            } else { // IX
+                roman = symbol[0] + (symbol[2] + roman);
+            }
+        }
+        
+        return roman;
     }
-    
-    string digitSymbol(int num, int base, char ten, char five, char one) {
-        int val = num / base % 10;
-        string result = "";
-        if(val >= 9){
-            result += one;
-            result += ten;
-            val -= 9;
-        }
-        
-        if(val >= 5){
-            result += five;
-            val -= 5;
-        }
-        
-        if(val >= 4){
-            result += one;
-            result += five;
-            val -= 4;
-        }
-        
-        while(val>=1) {
-            result += one;
-            val -= 1;
-        }
-        return result;
-    }
-    
+};
+
+
+// =======================================================================
+// Roman to Integer
+// 128 milli secs pass large judge
+
+class Solution {
+public:
     int romanToInt(string s) {
-        map<char, int> digit;
-        digit.insert(make_pair('I', 1));
-        digit.insert(make_pair('V', 5));
-        digit.insert(make_pair('X', 10));
-        digit.insert(make_pair('L', 50));
-        digit.insert(make_pair('C', 100));
-        digit.insert(make_pair('D', 500));
-        digit.insert(make_pair('M', 1000));
+        int num=0;
+        char *symbol = "IVXLCDM?!"; // I, V, X, L, C, D, M
+        
+        for(int i=s.size()-1, base=1; i>=0; --i) {
+            if(s[i]==symbol[0]) { // I
+                num += base;
+                if(i!=s.size()-1 && 
+                  (s[i+1]==symbol[1] || s[i+1]==symbol[2])) // IV, IX
+                    num -= 2 * base;
+            } else if(s[i]==symbol[1]) { // V
+                num += 5 * base;
+            } else if(s[i]==symbol[2]) { // X
+                num += 10 * base;
+            } else { // others, change base
+                base *= 10;
+                symbol += 2;
+                ++i; // skip --i
+            }
+        }
+        
+        return num;
+    }
+};
+
+// =======================================================================
+// Roman to Integer, version 2
+
+class Solution {
+public:
+    int romanToInt(string s) {
+        map<char, int> digit = {{'I', 1}, {'V', 5}, {'X', 10}, 
+            {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000}};
         
         int result = digit[s[0]];
         for(int i=1; i<s.size(); i++) {
@@ -73,49 +98,5 @@ public:
             }
         }
         return result;
-    }
-    
-    // version 2
-    int romanToInt2(string s) {
-        return symbolDigit(s, 1000, ' ', ' ', 'M', 'C') + 
-               symbolDigit(s, 100,  'M', 'D', 'C', 'X') + 
-               symbolDigit(s, 10,   'C', 'L', 'X', 'I') + 
-               symbolDigit(s, 1,    'X', 'V', 'I', ' ');
-    }
-    
-    int symbolDigit(string s, int base, char ten, char five, char one, char stop) {
-        int result = 0;
-        int index = 0;
-        while(index!=s.size()) {
-            if(s[index] == stop)
-                return result;
-            if(s[index] == five || s[index] == one) 
-                break;
-            else
-                index++;
-        }
-        
-        while(index!=s.size() && (s[index]==five || s[index]==one)) {
-            if(s[index] == five) {
-                result += 5; 
-                index++;
-                continue;
-            }
-            if(s[index] == one) {
-                if(index!=s.size()+1 && s[index+1]==five) {
-                    result += 4;
-                    index += 2;
-                    continue;
-                }
-                if(index!=s.size()+1 && s[index+1]==ten) {
-                    result += 9;
-                    index += 2;
-                    continue;
-                }
-                result += 1;
-                index++;
-            }
-        }
-        return result * base;
     }
 };

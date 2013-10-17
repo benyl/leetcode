@@ -102,39 +102,37 @@ class Solution {
 public:
     // find misplaced node and swap the values
     void recoverTree(TreeNode *root) {
-        TreeNode *curr=root, *prev=NULL, *err1=NULL, *err2=NULL;
+        TreeNode *prev=NULL, *err1=NULL, *err2=NULL;
         
-        while (curr != NULL) {
-            if (curr->left==NULL) {                     // 1) this node has no predecessor at left subtree
+        while (root != NULL) {
+            if (root->left==NULL) {             // 1) this node has no predecessor at left subtree
             
-                if(prev && prev->val > curr->val) {     // check if node was misplaced
-                    if(!err1) err1 = prev; 
-                    err2=curr;
+                if(prev && prev->val > root->val) {
+                    if(!err1) err1 = prev;      // remember misplaced nodes
+                    err2=root;
                 }
-                
-                prev = curr;                             // remember predecessor
-                curr = curr->right;                      // go to successor
+                prev = root;                    // remember predecessor
+                root = root->right;             // go to successor
             } else {
-                TreeNode *child_prev = curr->left;       // find predecessor from left subtree
-                while (child_prev->right != NULL && child_prev->right != curr)
-                    child_prev = child_prev->right;
+                TreeNode *p = root->left;       // find predecessor from left subtree
+                while (p->right!=NULL && p->right!=root)
+                    p = p->right;
                     
-                if (child_prev->right == NULL) {        // 2-1) predecessor is not traverse yet
-                    child_prev->right = curr;            // link the predecessor to current node
-                    curr = curr->left;                   // traverse the left subtree
-                } else {                                 // 2-2) predecessor is traversed
-                    child_prev->right = NULL;            // unlink the predecessor
+                if (p->right == NULL) {        // 2-1) if predecessor is not traverse yet
+                    p->right = root;                // link the predecessor to current node
+                    root = root->left;              // traverse the left subtree
+                } else {                        // 2-2) if predecessor is traversed
+                    p->right = NULL;                // unlink the predecessor
                     
-                    if (prev && prev->val > curr->val) {  // check if node was misplaced
-                        if(!err1) err1 = prev; 
-                        err2=curr;
+                    if (prev && prev->val > root->val) {
+                        if(!err1) err1 = prev;      // remember misplaced nodes
+                        err2=root;
                     }
-                    
-                    prev = curr;                          // remember predecessor
-                    curr = curr->right;                   // go to successor
-                } // end of: if (child_prev->right == NULL)
-            } // end of: if(curr->left==NULL)
-        } // end of: while (curr != NULL)
+                    prev = root;                    // remember predecessor
+                    root = root->right;             // go to successor
+                } // end of: if (p->right == NULL)
+            } // end of: if(root->left==NULL)
+        } // end of: while (root != NULL)
         
         swap(err1->val, err2->val);
     } //  end of: void recoverTree(TreeNode *root)

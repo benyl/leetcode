@@ -52,14 +52,9 @@ public:
             if(j>0 && board[i][j-1]=='O') { board[i][j-1] = '+'; stk.push(make_pair(i,j-1)); }
         }
         
-        // mark all other 'O' to 'X'
+        // mark all other 'O' to 'X' and mark all '+' back to 'O'
         for(int i=0; i<m; ++i)
         for(int j=0; j<n; ++j)
-            board[i][j] = (board[i][j]=='O') ? 'X' : board[i][j];
-        
-        // mark all '+' to 'O'
-        for(int i=0; i<m; ++i)
-        for(int j=0; j<n; ++j)
-            board[i][j] = (board[i][j]=='+') ? 'O' : board[i][j];
+            board[i][j] = (board[i][j]=='+') ? 'O' : 'X';
     }
 };

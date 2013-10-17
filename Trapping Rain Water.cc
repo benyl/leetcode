@@ -20,7 +20,7 @@ class Solution {
 public:
     int trap(int A[], int n) {
         if(n<3) return 0;
-        vector<int> left_bound(n, 0);
+        vector<int> left_bound(n);
         
         // 1) 1->n: search height of max left bound for each bar
         left_bound[0] = A[0];
@@ -32,9 +32,8 @@ public:
         //    no water trap if if bound is shorter than A[i]
         int right_bound = A[n-1], water = 0;
         for(int i=n-2; i>0; i--) {
-            int bound = min(right_bound, left_bound[i]);
-            water += (bound > A[i]) ? (bound - A[i]) : 0;
             right_bound = max(A[i], right_bound); // update right bound
+            water += min(right_bound, left_bound[i]) - A[i];
         }
         
         return water;

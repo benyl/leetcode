@@ -58,18 +58,19 @@ class Solution {
 public:
     bool hasPathSum(TreeNode *root, int sum) {
         if(!root) return false;
-        
-        // if is leaf node
-        if(!root->left && !root->right && root->val==sum) return true;
-        
-        // check both left and right sub-tree
-        return hasPathSum(root->left, sum-root->val) || hasPathSum(root->right, sum-root->val);
+        sum -= root->val;
+        if(!root->left && !root->right) // for leaf node
+            return (sum==0);
+        return hasPathSum(root->left, sum) ||
+                hasPathSum(root->right, sum);
     }
 };
 
 // ============================================
 // Path Sum II
 // 
+
+// version 1, one function
 class Solution {
 public:
     vector<vector<int> > pathSum(TreeNode *root, int sum) {
@@ -94,5 +95,35 @@ public:
         result.insert(result.end(), right.begin(), right.end());
             
         return result;
+    }
+};
+
+
+// version 2, avoid copying
+class Solution {
+public:
+    vector<int> path; // store current path
+    vector<vector<int> > result;
+    
+    vector<vector<int> > pathSum(TreeNode *root, int sum) {
+        path.clear();
+        result.clear();
+        findPathSum(root, sum);
+        return result;
+    }
+    
+    void findPathSum(TreeNode *root, int sum) {
+        if(!root) return;
+        
+        sum -= root->val;
+        path.push_back(root->val); // save node in path
+        
+        if(!root->left && !root->right && sum==0) // leaf node
+            result.push_back(path);
+        
+        findPathSum(root->left, sum);
+        findPathSum(root->right, sum);
+        
+        path.pop_back(); // back tracking
     }
 };

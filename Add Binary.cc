@@ -12,10 +12,7 @@ class Solution {
 public:
     string addBinary(string a, string b) {
         if(a.size() < b.size()) swap(a, b);
-		
-		int i = a.size()-1;
-		int j = b.size()-1;
-		int carry = 0;
+		int i=a.size()-1, j=b.size()-1, carry=0;
 
 		while(i>=0) {
 			int sum = (a[i]-'0') + carry;

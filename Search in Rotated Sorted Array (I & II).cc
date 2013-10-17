@@ -110,3 +110,61 @@ void main()
     cout << sol.search(input, sizeof(input)/sizeof(int), target) << endl;
     getchar();
 }
+
+
+// ==============================================
+// Search in Rotated Sorted Array
+// clear version
+// time complexity o(log(n)), space complexity o(1)
+
+class Solution {
+public:
+    int search(int A[], int n, int target) {
+        if(n==0) return -1;
+        for(int start=0, end=n-1; start<=end;) {
+            int mid = (start+end)/2;
+            if(A[mid]==target) return mid;
+            if(A[mid]>=A[start]) { // rotate point is in right half
+                if(target>=A[start] && target<=A[mid]) // in the left range
+                    end = mid-1;
+                else
+                    start = mid+1;
+            } else { // rotate point is in left half
+                if(target>=A[mid] && target<=A[end]) // in the right range
+                    start = mid+1;
+                else
+                    end = mid-1;
+            }
+        }
+        return -1;
+    }
+};
+
+// ==============================================
+// Search in Rotated Sorted Array II
+// clear version
+// time complexity o(log(n)), worse case o(n), space complexity o(1)
+
+class Solution {
+public:
+    bool search(int A[], int n, int target) {
+        if(n==0) return false;
+        if(n==1) return A[0] == target;
+        if(A[n/2]==target) return true;
+        
+        if(A[n/2]==A[0] && A[n/2]==A[n-1]) // search both site
+            return search(A, n/2, target) || search(A+n/2, n-n/2, target);
+        
+        if(A[n/2]>=A[0] && A[n/2]>=A[n-1]) { // rotate point is in right half
+            if(target>=A[0] && target<=A[n/2]) // in the left range
+                return search(A, n/2, target);
+            else
+                return search(A+n/2, n-n/2, target);
+        } else { // rotate point is in left half
+            if(target>=A[n/2] && target<=A[n-1]) // in the right range
+                return search(A+n/2, n-n/2, target);
+            else
+                return search(A, n/2, target);
+        }
+    }
+};

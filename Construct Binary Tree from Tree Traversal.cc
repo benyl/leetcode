@@ -37,19 +37,17 @@ You may assume that duplicates do not exist in the tree.
 class Solution {
 public:
     TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder, 
-                        int pre=-1, int in=-1, int len=0) {
+                        int pre=0, int in=0, int len=-1) {
                         
-        if(in==-1) { pre=0; in=0; len=inorder.size(); }
-        if(len <= 0) return NULL;
-        if(len == 1) return new TreeNode(inorder[in]);
+        if(len==-1) len=inorder.size(); // initialize len
+        if(len==0) return NULL;
         
-        int privot = 0;
-        while(inorder[in+privot] != preorder[pre]) ++privot;
+        int pos = 0;
+        while(inorder[in+pos] != preorder[pre]) ++pos;
         
-        TreeNode *root = new TreeNode(inorder[in+privot]);
-        
-        root->left = buildTree(preorder, inorder, pre+1, in, privot);
-        root->right = buildTree(preorder, inorder, pre+privot+1, in+privot+1, len-privot-1);
+        TreeNode *root = new TreeNode(inorder[in+pos]);
+        root->left = buildTree(preorder, inorder, pre+1, in, pos);
+        root->right = buildTree(preorder, inorder, pre+pos+1, in+pos+1, len-pos-1);
         
         return root;
     }
@@ -63,19 +61,17 @@ public:
 class Solution {
 public:
     TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder, 
-                        int in=-1, int post=-1, int len=0) {
+                        int in=0, int post=0, int len=-1) {
                         
-        if(in==-1) { in=0; post=0; len=inorder.size(); }
-        if(len <= 0) return NULL;
-        if(len == 1) return new TreeNode(inorder[in]);
+        if(len==-1) len=inorder.size(); // initialize len
+        if(len==0) return NULL;
         
-        int privot = 0;
-        while(inorder[in+privot] != postorder[post+len-1]) ++privot;
+        int pos = 0;
+        while(inorder[in+pos] != postorder[post+len-1]) ++pos;
         
-        TreeNode *root = new TreeNode(inorder[in+privot]);
-        
-        root->left = buildTree(inorder, postorder, in, post, privot);
-        root->right = buildTree(inorder, postorder, in+privot+1, post+privot, len-privot-1);
+        TreeNode *root = new TreeNode(inorder[in+pos]);
+        root->left = buildTree(inorder, postorder, in, post, pos);
+        root->right = buildTree(inorder, postorder, in+pos+1, post+pos, len-pos-1);
         
         return root;
     }

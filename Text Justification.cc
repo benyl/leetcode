@@ -111,7 +111,7 @@ public:
         if(words.size()==0) 
             return vector<string>();
         
-        vector<string> result;
+        vector<string> result, cand;
         int start=0, end=0, length=0;
         for(int i=0; i<=words.size(); ++i) {
             if(i==words.size() || length+words[i].size()>=L) {

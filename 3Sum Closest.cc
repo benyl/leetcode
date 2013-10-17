@@ -10,79 +10,32 @@ You may assume that each input would have exactly one solution.
     The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <algorithm>
-
-using namespace std;
-
-template <class T>
-void PrintVec(vector<T> vec)
-{
-	for(int i=0; i<vec.size(); i++)
-	{
-		cout << vec[i];
-		if(i!=vec.size()-1)
-			cout << ", ";
-	}
-	cout << endl;
-}
+// =======================================================================
+// 3Sum Closest
+// 184 milli secs pass large judge
+// time comlexity o(n^2 log n), space complexity (1)
 
 class Solution {
 public:
     int threeSumClosest(vector<int> &num, int target) {
-		if(num.size() < 3) return 0;
-				
-		// sort the num if the num is not in order
-		for(int i=1; i < num.size(); i++)
-			if(num[i] < num[i-1]) {
-				sort(num.begin(), num.end());
-				break;
-			}
-
-		int size = num.size();
-		int closest = num[0] + num[1] + num[2];
-		int distance_closest = (closest>target)?(closest-target):(target-closest);
-
-		for(int p1=0; p1<num.size()-2;p1++)
-		{
-			if(p1>0 && num[p1] == num[p1-1]) continue;
-			for(int p2=p1+1; p2<num.size()-1;p2++)
-			{
-				if(p2>p1+1 && num[p2] == num[p2-1]) continue;
-				for(int p3=p2+1; p3<num.size();p3++)
-				{
-					if(p3>p2+1 && num[p3] == num[p3-1]) continue;
-					int sum = num[p1] + num[p2] + num[p3];
-					int distance = (sum>target)? (sum-target):(target-sum);
-					
-					if(distance < distance_closest)
-					{
-						closest = sum;
-						distance_closest = distance;
-						if(distance == 0) return sum;
-					}
-				}
-			}
-		}
-		return closest;
-    } // end of: threeSumClosest(vector<int> &num, int target)
+        sort(num.begin(), num.end()); // sort the numbers for efficiency
+        
+        int closest = num[0]+num[1]+num[2]; // initial closet sum
+        for(int i=0; i<num.size()-2; ++i) {
+            for(int j=i+1; j<num.size()-1; ++j) {
+                int cand = target-num[i]-num[j];
+                auto itr = lower_bound(num.begin()+j+1, num.end(), cand); 
+                // use binary search to find lower bound of candidate
+                if(*itr==cand) return target;
+                // compare sum with closet sum to target
+                if(*itr-cand < abs(closest-target))
+                    closest = num[i]+num[j]+*itr;
+                // also check the biggest number that is smaller than candidate
+                if(--itr - num.begin() > j && cand-*itr < abs(closest-target))
+                    closest = num[i]+num[j]+*itr;
+            }
+        }
+        
+        return closest;
+    }
 };
-
-void main()
-{
-	int inputArray[] = {-1, 2, 1, -4};
-	vector<int> input(inputArray,end(inputArray));
-	int target = 1;
-
-	Solution s;
-	int result = s.threeSumClosest(input, target);
-
-	cout << "input: ";
-	PrintVec<int>(input);
-	cout << "target: " << target << endl;
-	cout << "result: " << result << endl;
-
-	getchar();
-}

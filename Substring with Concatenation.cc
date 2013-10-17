@@ -67,36 +67,44 @@ public:
         
         return true;
     }
-    
-    // version 2, use map
-    vector<int> findSubstring2(string S, vector<string> &L) {
-        map<string, int> words;
-    	map<string, int> curStr;
-		for(int i = 0; i < L.size(); ++i)
-			++words[L.at(i)];
-		int N = L.size();
-		vector<int> ret;
-		if(N <= 0)	return ret;
-		int M = L.at(0).size();
-		for(int i = 0; i <= (int)S.size()-N*M; ++i)
-		{
-			curStr.clear();
-			int j = 0;
-			for(j = 0; j < N; ++j)
-			{
+};
+
+// version 2, use map
+class Solution {
+public:
+    vector<int> findSubstring(string S, vector<string> &L) {
+        if(S.size()==0 || L.size() == 0) return vector<int>();
+        
+        map<string, int> words; // word->index
+        vector<int> count;
+        
+		for(int i = 0; i < L.size(); ++i) {
+            if(words.find(L[i]) == words.end()) {
+                words[L[i]] = count.size();
+                count.push_back(1);
+            } else {
+                ++count[words[L[i]]];
+            }
+		}
+        
+		int N = L.size(), M = L[0].size();
+		vector<int> ret, found(count.size(), 0);
+        
+		for(int i=0; i<=(int)S.size()-N*M; ++i) {
+			fill(found.begin(), found.end(), 0);
+			int j;
+			for(j = 0; j < N; ++j) {
 				string w = S.substr(i+j*M, M);
-				if(words.find(w) == words.end())
-					break;
-				++curStr[w];
-				if(curStr[w] > words[w])
-					break;
+				if(words.find(w) == words.end()) break;
+                int index = words[w];
+				++found[index];
+				if(found[index] > count[index]) break;
 			}
 			if(j == N)	ret.push_back(i);
 		}
 		return ret;
     }
-};
-
+ };
 
 // version 3, use hash
 class Solution {
@@ -114,10 +122,9 @@ class Solution {
          index.clear();
          countSize = 0;
          for(int i = 0; i < L.size(); i++)
-             if (index.count(L[i]) > 0)
+             if (index.count(L[i]) > 0) {
                  count[index[L[i]]]++;
-             else
-             {
+             } else {
                  index[L[i]] = countSize;
                  count[countSize++] = 1;
              }
@@ -126,13 +133,10 @@ class Solution {
  
              vector<int> a;
  
-             for(int i = 0; i < step; i++)
-             {
+             for(int i = 0; i < step; i++) {
                  a.clear();
-                 for(int j = i; j < S.size(); j += step)
-                 {
-                     if (j + step <= S.size())
-                     {
+                 for(int j = i; j < S.size(); j += step) {
+                     if (j + step <= S.size()) {
                          string s(S, j, step);
                          if (index.count(s) > 0)
                              a.push_back(index[s]);
@@ -144,21 +148,14 @@ class Solution {
                  int beg = -1;
                  int end = 0;
                  int size = L.size();
-                 while(end < a.size())
-                 {
-                     if (a[end] != -1)
-                     {
-                         if (count[a[end]] > 0)
-                         {
-                             if (beg == -1)
-                                 beg = end;
+                 while(end < a.size()) {
+                     if (a[end] != -1) {
+                         if (count[a[end]] > 0) {
+                             if (beg == -1) beg = end;
                              size--;
                              count[a[end]]--;
-                         }
-                         else
-                         {
-                             while(beg < end)
-                             {
+                         } else {
+                             while(beg < end) {
                                  count[a[beg]]++;
                                  size++;
                                  if (a[beg++] == a[end])
@@ -167,22 +164,18 @@ class Solution {
                              count[a[end]]--;
                              size--;
                          }
-                     }
-                     else
-                     {
+                     } else {
                          size = L.size();
-                         if (beg != -1)
-                         {    
+                         if (beg != -1) {    
                              for(int i = beg; i < end; i++)
                                  count[a[i]]++;
                          }
-                         beg    = -1;
+                         beg = -1;
                      }
  
                      end++;
  
-                     if (size == 0)
-                     {
+                     if (size == 0) {
                          ret.push_back(beg * step + i);
                          size++;
                          count[a[beg]]++;
@@ -190,8 +183,7 @@ class Solution {
                      }
                  }
  
-                 if (beg != -1)
-                 {
+                 if (beg != -1) {
                      for(int i = beg; i < end; i++)
                          count[a[i]]++;
                  }

@@ -12,9 +12,6 @@ A solution set is: ["tea","ate","eat"]
 class Solution {
 public:
     vector<string> anagrams(vector<string> &strs) {
-    	vector<string> result;
-		if(strs.size()< 2) return result;
-        
         // sort the string as key for the hash map
         map<string, vector<string> > strsmap;
 		for(int i=0;i<strs.size(); i++) {
@@ -24,6 +21,7 @@ public:
 		}
         
         // insert all the strings that has anagrams
+    	vector<string> result;
         for(auto iter=strsmap.begin(); iter!=strsmap.end(); iter++)
             if(iter->second.size()>1)
                 result.insert(result.end(), iter->second.begin(), iter->second.end());

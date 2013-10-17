@@ -31,6 +31,9 @@ using namespace std;
 
 class Solution {
 public:
+
+    //=======================================================================
+    // Permutations
     vector<vector<int> > permute(vector<int> &num) {
         vector<vector<int> > result;
         
@@ -56,7 +59,8 @@ public:
         return result;
     }
     
-    
+    //=======================================================================
+    // Permutations II
     vector<vector<int> > permuteUnique(vector<int> &num) {
         vector<vector<int> > result;
         
@@ -86,6 +90,8 @@ public:
 };
 
 
+//=======================================================================
+// test code
 template <class T>
 void PrintVec(vector<T> vec)
 {
@@ -116,3 +122,59 @@ int main()
   getchar();
   return 0;
 }
+
+
+//=======================================================================
+// Permutations
+// compact version, avoid copying
+
+class Solution {
+public:
+    vector<vector<int> > result;
+    
+    vector<vector<int> > permute(vector<int> &num) {
+        result.clear();
+        getPermute(num, 0);
+        return result;
+    }
+    
+    void getPermute(vector<int> &num, int step) {
+        if(step == num.size()-1)
+            result.push_back(num);
+            
+        for(int i=step; i<num.size(); ++i) {
+            swap(num[step], num[i]); // choose the rest of candidate
+            getPermute(num, step+1);
+            swap(num[step], num[i]); // recover for back tracking
+        }
+    }
+};
+
+
+//=======================================================================
+// Permutations II
+// compact version, avoid copying
+
+class Solution {
+public:
+    vector<vector<int> > result;
+    
+    vector<vector<int> > permuteUnique(vector<int> &num) {
+        result.clear();
+        getPermuteUni(num, 0);
+        return result;
+    }
+    
+    void getPermuteUni(vector<int> &num, int step) {
+        if(step == num.size()-1)
+            result.push_back(num);
+        sort(num.begin()+step, num.end());
+        for(int i=step; i<num.size(); ++i) {
+            if(i!=step && num[i]==num[i-1]) continue;
+            swap(num[step], num[i]); // choose the rest of candidate
+            getPermuteUni(num, step+1);
+            sort(num.begin()+step, num.end());
+        }
+    }
+};
+

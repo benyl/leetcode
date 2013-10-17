@@ -184,8 +184,6 @@ public:
         que.push(vstr);
         len[vstr] = 1; // mark distance of start
         
-        
-        
         while(not que.empty()) {
             int v1 = que.front(); que.pop();
             if(v1 == vend) break;

@@ -24,10 +24,10 @@ public:
     bool isPalindrome(string s) {
         int start=0, end=s.size()-1; // start index and end index
         while(start<end) {
-            while(!isalnum(tolower(s[start])) && start<end) ++start; // find next alphenumeric char
-            while(!isalnum(tolower(s[end])) && start<end) --end; // find next alphenumeric char
-            if(start<end && tolower(s[start])!=tolower(s[end])) return false; // check palindrome
-            ++start; --end; // move indexs one step forward
+            if(!isalnum(s[start])) ++start; // find next alphenumeric char
+            else if(!isalnum(s[end])) --end; // find next alphenumeric char
+            else if(tolower(s[start++])!=tolower(s[end--]))
+                return false; // check palindrome & move indexs one step forward
         }
         return true;
     }

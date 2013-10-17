@@ -26,22 +26,17 @@ public:
     string convert(string s, int nRows) {
         if(nRows==1) return s;
         
-        vector<string> row(nRows, string(""));
-        int index = 0;
-        bool flag = true;
-        for(int i=0; i<s.size(); ++i) {
-            row[index] += s[i];
-            
-            index += (flag) ? 1 : -1;
-            if(index==0) flag=true;
-            if(index==nRows-1) flag=false;
+        vector<string> seg(nRows);
+        for(int i=0, row=0, step=1; i<s.size(); ++i, row+=step) {
+            seg[row] += s[i];
+            if(row == 0) step = 1;
+            if(row == nRows-1) step = -1;
         }
         
-        string result = "";
-        for(int i=0; i<nRows; ++i)
-            result += row[i];
+        for(int row=1; row<nRows; ++row)
+            seg[0] += seg[row];
             
-        return result;
+        return seg[0];
     }
 };
 
@@ -57,20 +52,15 @@ public:
 class Solution {
 public:
     string convert(string s, int nRows) {
-        if(nRows==1) return s;
+        if(nRows==1) return s; // corner case, step=2(nRows-1)=0 when nRows=1
         
         string result = "";
-        for(int i=0; i<nRows; ++i) {
-            int index=i;
-            int step = (nRows-1) * 2;
-            int in_step = (nRows-1-i) * 2;
-            while(index < s.size()) {
-                result += s[index];
-                if(i!=0 && i!=nRows-1 && (index+in_step<s.size()))
-                    result += s[index + in_step];
-                index += step;
+        for(int i=0; i<nRows; ++i)
+            for(int j=i; j<s.size(); j+=2*(nRows-1)) { // loop step = 2*(nRows-1)
+                result += s[j];
+                if(i!=0 && i!=nRows-1 && j+2*(nRows-1-i)<s.size())
+                    result += s[j+2*(nRows-1-i)]; //  internal step = 2*(nRows-1-i)
             }
-        }
         
         return result;
     }

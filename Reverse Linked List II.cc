@@ -26,34 +26,30 @@ class Solution {
 public:
     ListNode *reverseBetween(ListNode *head, int m, int n) {
         // add a dummy head before head
-        ListNode *pre = new ListNode(0);
-        pre->next = head;
-        head = pre;
+        ListNode *prev = new ListNode(0);
+        prev->next = head;
+        head = prev;
         
         // find the node before reverse part
         while(m!=1) {
-            pre = pre->next;
+            prev = prev->next;
             --m; --n;
         }
         
         // the first node of reverse part will be the last node
-        ListNode *curr = pre->next; // current node for iteration
-        ListNode *last = curr; // remember the last node of reverse part
+        ListNode *last = prev->next;
         
         // insert the nodes at the head of reverse part
-        for(int i=0; i<n; ++i) {
-            ListNode *temp = curr->next;
-            curr->next = pre->next;
-            pre->next = curr;
-            curr = temp;
+        while(--n!=0) {
+            ListNode *temp = last->next;
+            last->next = temp->next;
+            temp->next = prev->next;
+            prev->next = temp;
         }
         
-        // link the last node to the rest of the linked list
-        last->next = curr;
-        
         // remove dummy head and reaturn real head
-        pre = head->next;
+        prev = head->next;
         delete head;
-        return pre;
+        return prev;
     }
 };

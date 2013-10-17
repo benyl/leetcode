@@ -12,10 +12,14 @@ A simple improvement uses O(m + n) space, but still not the best solution.
 Could you devise a constant space solution?
 */
 
+
+// ==============================================
+// version 1, use O(m + n) space
+// time complexity o(m*n), space complexity o(m+n)
+
 class Solution {
 public:
-    // version 1, use O(m + n) space
-    void setZeroes1(vector<vector<int> > &matrix) {
+    void setZeroes(vector<vector<int> > &matrix) {
         vector<int> zerorow = vector<int>(matrix.size(), 1);
         vector<int> zerocol = vector<int>(matrix[0].size(), 1);
         
@@ -32,8 +36,15 @@ public:
                 matrix[i][j]=0;
             }
     }
+};
 
-    // version 2, use constant space
+
+// ==============================================
+// version 2, use constant space
+// time complexity o(m*n), space complexity o(1)
+
+class Solution {
+public:
     void setZeroes(vector<vector<int> > &matrix) {
         if(!matrix.size() || !matrix[0].size()) return;
         

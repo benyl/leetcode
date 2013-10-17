@@ -29,8 +29,10 @@ public:
     }
 };
 
-
+// =====================================================================
 // version 2, use sliding window
+// 70 milli secs pass large solution
+// time complexity o(n), space complexity (1)
 
 class Solution {
 public:
@@ -38,17 +40,14 @@ public:
         if(s.size()==0) return 0;
         
         vector<int> found(256, 0); // number of char found
-        int repeat = 0; // number of repeat char
         int start=0, end=0, maxlen=0;
         
         while(end<s.size())
-            if(repeat==0) {
-                if(found[s[end]]==1) ++repeat;
+            if(found[s[end]]==0) {
                 ++found[s[end]];
                 ++end;
-                if(repeat==0) maxlen = max(maxlen, end-start);
+                maxlen = max(maxlen, end-start);
             } else {
-                if(found[s[start]]==2) --repeat;
                 --found[s[start]];
                 ++start;
             }

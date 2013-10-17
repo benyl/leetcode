@@ -86,88 +86,99 @@ struct TreeNode {
 
 class Solution {
 public:
-  // ===============================================================
-  // Binary Tree Level Order Traversal
-  vector<vector<int> > levelOrder(TreeNode *root) {
-    vector<vector<int> > result;
-    queue<pair<int, TreeNode *> > nqueue; // queue of node with level
-    nqueue.push(make_pair(0, root));
-    
-    while(!nqueue.empty()) {
-      int level = nqueue.front().first;
-      TreeNode *p = nqueue.front().second;
-      nqueue.pop();
-      
-      if(p!=NULL) {
-        nqueue.push(make_pair(level+1, p->left));
-        nqueue.push(make_pair(level+1, p->right));
+    // ===============================================================
+    // Binary Tree Level Order Traversal
+    vector<vector<int> > levelOrder(TreeNode *root) {
+        vector<vector<int> > result;
+        queue<TreeNode *> que;
+        int level=1, num=1;
+        que.push(root);
         
-        if(result.size() < level+1)
-          result.push_back(vector<int>());
+        while(!que.empty()) {
+            root = que.front();
+            que.pop();
+            
+            if(root) {
+                if(level>result.size()) 
+                    result.push_back(vector<int>());
+                result.back().push_back(root->val);
+                
+                que.push(root->left);
+                que.push(root->right);
+            }
+            
+            if(--num==0) {
+                num=que.size();
+                ++level;
+            }
+        }
         
-        result[level].push_back(p->val);
-      } // end of: if(p!=null)
-    } // end of: while(!nqueue.empty())
-    
-    return result;
-  }// end of: levelOrder(TreeNode *root)
-
+        return result;
+    }
   
-  // ===============================================================
-  // Binary Tree Level Order Traversal II
-  vector<vector<int> > levelOrderBottom(TreeNode *root) {
-    vector<vector<int> > result;
-    queue<pair<int, TreeNode *> > nqueue; // queue of node with level
-    nqueue.push(make_pair(0, root));
-    
-    while(!nqueue.empty()) {
-      int level = nqueue.front().first;
-      TreeNode *p = nqueue.front().second;
-      nqueue.pop();
-      
-      if(p!=NULL) {
-        nqueue.push(make_pair(level+1, p->left));
-        nqueue.push(make_pair(level+1, p->right));
+    // ===============================================================
+    // Binary Tree Level Order Traversal II
+    vector<vector<int> > levelOrderBottom(TreeNode *root) {
+        vector<vector<int> > result;
+        queue<TreeNode *> que;
+        int level=1, num=1;
+        que.push(root);
         
-        if(result.size() < level+1)
-          result.push_back(vector<int>());
+        while(!que.empty()) {
+            root = que.front();
+            que.pop();
+            
+            if(root) {
+                if(level>result.size()) 
+                    result.insert(result.begin(), vector<int>());
+                result[0].push_back(root->val);
+                
+                que.push(root->left);
+                que.push(root->right);
+            }
+            
+            if(--num==0) {
+                num=que.size();
+                ++level;
+            }
+        }
         
-        result[level].push_back(p->val);
-      } // end of: if(p!=null)
-    } // end of: while(!nqueue.empty())
+        return result;
+    }
     
-    reverse(result.begin(), result.end());
-	return result;
-  }// end of: levelOrderBottom(TreeNode *root) 
 
-  // ===============================================================
-  // Binary Tree Zigzag Level Order Traversal
-  vector<vector<int> > zigzagLevelOrder(TreeNode *root) {
-    vector<vector<int> > result;
-    queue<pair<int, TreeNode *> > nqueue; // queue of node with level
-    nqueue.push(make_pair(0, root));
-    
-    while(!nqueue.empty()) {
-      int level = nqueue.front().first;
-      TreeNode *p = nqueue.front().second;
-      nqueue.pop();
-      
-      if(p!=NULL) {
-        nqueue.push(make_pair(level+1, p->left));
-        nqueue.push(make_pair(level+1, p->right));
+    // ===============================================================
+    // Binary Tree Zigzag Level Order Traversal
+    vector<vector<int> > zigzagLevelOrder(TreeNode *root) {
+        vector<vector<int> > result;
+        stack<TreeNode *> curr, next;
+        int level=1;
+        curr.push(root);
         
-        if(result.size() < level+1)
-          result.push_back(vector<int>());
+        while(!curr.empty()) {
+            root = curr.top();
+            curr.pop();
+            
+            if(root) {
+                if(level>result.size()) result.push_back(vector<int>());
+                result.back().push_back(root->val);
+                if(level%2) {
+                    next.push(root->left);
+                    next.push(root->right);
+                } else {
+                    next.push(root->right);
+                    next.push(root->left);
+                }
+            }
+            
+            if(curr.empty()) {
+                swap(curr, next);
+                ++level;
+            }
+        }
         
-        result[level].push_back(p->val);
-      } // end of: if(p!=null)
-    } // end of: while(!nqueue.empty())
-    
-    for(int i=1; i<result.size(); i+=2)
-      reverse(result[i].begin(), result[i].end());
-      
-    return result;
-  }// end of: zigzagLevelOrder(TreeNode *root)  
+        return result;
+    }
 };
 
 

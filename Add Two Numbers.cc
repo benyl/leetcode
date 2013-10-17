@@ -33,17 +33,15 @@ public:
         
 		ListNode *head = l1;
 		
-		bool carry = false;
-		while(True) {
+		int carry = 0;
+		while(true) {
 			l1->val += l2->val + carry;
-			carry = (l1->val > 9);
+			carry = l1->val / 10;
 			l1->val %= 10;
 				
-			if(l1->next!=NULL && l2->next!=NULL) {
-				l1=l1->next;
-				l2=l2->next;
-			}
-			else break;
+			if(!l1->next || !l2->next) break;
+            l1=l1->next;
+            l2=l2->next;
 		}
 		
 		if(l2->next!=NULL)
@@ -52,17 +50,19 @@ public:
 		while(carry) {
 			if(l1->next == NULL)
 				l1->next = new ListNode(0);
-				
 			l1 = l1->next;
 
 			l1->val += carry;
-			carry = (l1->val > 9);
+			carry = l1->val / 10;
 			l1->val %= 10;
 		}
 		
 		return head;
     } // end of: addTwoNumbers(ListNode *l1, ListNode *l2)
 };
+
+// ========================================================
+// test code
 
 void PrintList(ListNode* head)
 {

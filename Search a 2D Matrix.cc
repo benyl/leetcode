@@ -19,6 +19,11 @@ Consider the following matrix:
 Given target = 3, return true.
 */
 
+// ==============================================
+// using binary search
+// 68 milli secs pass large search
+// time complexity o(log(m*n)), space complexity o(1)
+
 class Solution {
 public:
     bool searchMatrix(vector<vector<int> > &matrix, int target) {

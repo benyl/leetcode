@@ -14,7 +14,6 @@ class Solution {
 public:
     bool isValid(string s) {
         stack<char> match;
-        
         for(int i=0; i<s.size(); i++) {
             switch(s[i]) {
             case ')':
@@ -31,9 +30,31 @@ public:
                 break;
             default:
                 match.push(s[i]);
+                break;
             } // end of: switch(s[i])
         } // end of: for(int i=0; i<s.size(); i++)
         
         return match.empty();
     } // end of: isValid(string s)
+};
+
+
+// use map
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> stk;
+        map<char, char> match = {{')','('},{'}','{'},{']','['}};
+        
+        for(int i=0; i<s.size(); ++i)
+            if(match.count(s[i])!=0)
+                if(!stk.empty() && stk.top()==match[s[i]])
+                    stk.pop();
+                else
+                    return false;
+            else
+                stk.push(s[i]);
+                
+        return stk.empty();
+    }
 };

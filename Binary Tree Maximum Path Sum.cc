@@ -14,23 +14,17 @@ Given the below binary tree,
 Return 6.
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <stack>
-#include <queue>
-
-using namespace std;
-
 /**
  * Definition for binary tree
- */
-struct TreeNode {
-  int val;
-  TreeNode *left;
-  TreeNode *right;
-  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
-};
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */ 
  
+// iterative version
 class Solution {
 public:
 	int maxPathSum(TreeNode *root) {
@@ -41,36 +35,29 @@ public:
 		
 		nqueue.push(root);
 		
-		while(!nqueue.empty())
-		{
+		while(!nqueue.empty()) {
 			TreeNode *p = nqueue.front();
 			nqueue.pop();
 		
-			if(p!=NULL)
-			{
+			if(p!=NULL) {
 				nqueue.push(p->left);
 				nqueue.push(p->right);
 				nstack.push(p);
-				//cout << p->val << endl;
 			}
 		} // end of: while(!nqueue.empty())
 		
 		int maxPath = root->val;
 		
-		while(!nstack.empty())
-		{
+		while(!nstack.empty()) {
 			TreeNode *p = nstack.top();
 			nstack.pop();
 		
 			if(p==NULL) continue;
 			
-			//cout << p->val << ":";
-			
 			int maxSum = p->val; // max path sum that go thru p
 			int maxSide = 0; // max path sum that end at p
 			
-			if(p->left!=NULL)
-			{
+			if(p->left!=NULL) {
 				if(p->left->val > 0) 
 					maxSum += p->left->val;
 
@@ -78,8 +65,7 @@ public:
 					maxSide = p->left->val;
 			}
 			
-			if(p->right!=NULL)
-			{
+			if(p->right!=NULL) {
 				if(p->right->val > 0) 
 					maxSum += p->right->val;
 
@@ -88,7 +74,6 @@ public:
 			}
 			
 			p->val += maxSide;
-			//cout << maxSum << " " << maxSide << " " << p->val << endl;
 			
 			maxPath = (maxSum > maxPath) ? maxSum : maxPath;
 		} // end of: while(!nstack.empty())
@@ -97,6 +82,28 @@ public:
     } // end of: maxPathSum(TreeNode *root)
 };
 
+
+// recursive version
+class Solution {
+public:
+    int maxPathSum(TreeNode *root, int *rootSum=NULL) {
+        if(!root) return INT_MIN;
+        
+        int lrs=0, rrs=0; // max sum from root
+        int lps = maxPathSum(root->left, &lrs);
+        int rps = maxPathSum(root->right, &rrs);
+        int sum = root->val + max(lrs, 0) + max(rrs, 0);
+        sum = max({sum, lps, rps});
+        
+        if(rootSum)
+           *rootSum = root->val + max({0, lrs, rrs});
+        
+        return sum;
+    }
+};
+
+
+// test code
 void main()
 {
 	TreeNode n1(1);
@@ -115,49 +122,3 @@ void main()
   
 	getchar();
 }
-
-/**
- * Definition for binary tree
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
- * };
- */
-//====================================================================
-#define MIN_INT -2147483647
-
-class Solution {
-public:
-    int maxPathSum(TreeNode *root, int *maxRootSum=NULL) { // 1,2
-        if(!root) { 
-            if(maxRootSum) *maxRootSum=MIN_INT; 
-            return MIN_INT;
-        }
-        
-        int maxPathSumLeft, maxPathSumRight, maxRootSumLeft, maxRootSumRight;
-        
-        maxPathSumLeft = maxPathSum(root->left, &maxRootSumLeft); //2-2
-        maxPathSumRight = maxPathSum(root->right, &maxRootSumRight); //min-min
-        
-        int result = root->val; //1
-        if(root->left) result += maxRootSumLeft; // 1+2
-        if(root->right) result += maxRootSumRight;
-        
-        if(root->left) result = max(result, maxPathSumLeft); //1+2
-        if(root->right) result = max(result, maxPathSumRight);
-        
-        result = max(result, root->val); // 1+2
-        
-        if(maxRootSum) {
-            *maxRootSum = max(maxRootSumLeft, maxRootSumRight);
-            if(*maxRootSum != MIN_INT) *maxRootSum += root->val;
-            else *maxRootSum = root->val;
-            
-            *maxRootSum = (*maxRootSum>0) ? *maxRootSum : 0;
-        }
-        
-        return result; //0
-    }
-};

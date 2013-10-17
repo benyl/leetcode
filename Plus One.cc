@@ -19,7 +19,11 @@ public:
             bool carry = digits[i]>9; // check carry bit
             digits[i] %= 10;
             if(!carry) break; // stop if no carry bit
-            if(i==0) digits.insert(digits.begin(), 1); // carry bit before the head
+            
+            if(i==0) { // carry bit before the head
+                digits[0] = 1;
+                digits.push_back(0);
+            }
         }
         return digits;
     }

@@ -28,15 +28,11 @@ using namespace std;
 class Solution {
 public:
     vector<int> grayCode(int n) {
-        vector<int> result;
-        if(n==0) {
-            result.push_back(0);
-            return result;
-        }
+        if(n==0) return vector<int>(1, 0);
         
-        result = grayCode(n-1);
+        vector<int> result = grayCode(n-1);
         for(int i=result.size()-1; i>=0; i--)
-            result.push_back(result[i]^(1<<(n-1)));
+            result.push_back(result[i]|(1<<(n-1))); 
         
         return result;
     }

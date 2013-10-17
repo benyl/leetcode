@@ -22,13 +22,13 @@ using the divide and conquer approach, which is more subtle.
 class Solution {
 public:
     int maxSubArray(int A[], int n) {
-        int max = INT_MIN, sum = 0; // remember current sum
-        for(int i=0; i<n; i++){
+        int maxSum = INT_MIN; // remember current sum
+        for(int i=0, sum=0; i<n; i++){
             sum += A[i];
-            max = (sum > max) ? sum : max;
-            sum = (sum > 0) ? sum : 0;
+            maxSum = max(sum, maxSum);
+            sum = max(sum, 0);
         }
-        return max;
+        return maxSum;
     }
 };
 

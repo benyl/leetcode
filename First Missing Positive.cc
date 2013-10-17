@@ -14,7 +14,9 @@ Your algorithm should run in O(n) time and uses constant space.
 
 
 // ==========================================================
-// large judge: 12 milli secs
+// 12 milli secs pass large judge
+// time complexity o(n), space complexity o(1)
+
 class Solution {
 public:
     int firstMissingPositive(int A[], int n) {

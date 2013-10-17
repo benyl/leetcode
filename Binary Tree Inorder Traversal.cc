@@ -1,3 +1,5 @@
+
+
 /*
 Binary Tree Inorder Traversal
 
@@ -39,15 +41,15 @@ struct TreeNode {
 // time complexity: o(n), space complexity: log(n) in stack, o(n) in result
 class Solution {
 public:
-    vector<int> inorderTraversalTrial(TreeNode *root) {
-        vector<int> result;
-        if(root != NULL) {
-            result = inorderTraversalTrial(root->left);
-            result.push_back(root->val);
-            vector<int> post = inorderTraversalTrial(root->right);
-            result.insert(result.end(), post.begin(), post.end());
-        }
-        return result;
+    vector<int> inorderTraversal(TreeNode *root) {
+        if(!root) return vector<int> ();
+        
+        vector<int> left = inorderTraversal(root->left);
+        left.push_back(root->val);
+        vector<int> right = inorderTraversal(root->right);
+        left.insert(left.end(), right.begin(), right.end());
+        
+        return left;
     }
 };
 
@@ -58,19 +60,18 @@ class Solution {
 public:
     vector<int> inorderTraversal(TreeNode *root) {
         vector<int> result;
-        TreeNode *curr = root;
-        stack<TreeNode *> mid_stk, right_stk;
+        stack<TreeNode *> stk;
         
-        while(curr || !mid_stk.empty()) {
-            if(curr) {
-                right_stk.push(curr->right);
-                mid_stk.push(curr);
-                curr = curr->left;
+        while(root || !stk.empty()) {
+            if(root) {
+                stk.push(root->right);
+                stk.push(root);
+                root = root->left;
             } else {
-                result.push_back(mid_stk.top()->val);
-                curr = right_stk.top();
-                mid_stk.pop();
-                right_stk.pop();
+                result.push_back(stk.top()->val);
+                stk.pop();
+                root = stk.top();
+                stk.pop();
             }
         }
         

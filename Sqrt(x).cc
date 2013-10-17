@@ -23,11 +23,10 @@ public:
         while(min <= max){
             int mid = (min+max)/2;
             int sqr = mid * mid;
-            if(sqr == x)
-                return mid;
-            else if (sqr < x)
+            if(sqr == x) return mid;
+            else if(sqr < x) 
                 min = mid+1;
-            else
+            else 
                 max = mid-1;
         }
         
@@ -36,7 +35,30 @@ public:
 };
 
 //======================================================================= 
-// version 2, use Newton's method for root approximation
+// version 2, use bit manipulation
+class Solution {
+public:
+    int sqrt(int x) {
+        if(x<1) return 0;
+        long long root;
+        int bits = 0;
+        
+        for(root=1; root*root<x; root<<=1)
+            ++bits;
+        
+        for(root=0; bits>=0; --bits) {
+            long long tmp = root | (1<<bits);
+            long long sqr = tmp * tmp;
+            if(sqr == x) return tmp;
+            if(sqr < x) root = tmp;
+        }
+        
+        return root;
+    }
+};
+
+//======================================================================= 
+// version 3, use Newton's method for root approximation
 // https://en.wikipedia.org/wiki/Newton's_method
 // Newton's method: t1 = t0 - f(t0) / f'(t0)
 // f(t0) = t0 ^ 2 - x

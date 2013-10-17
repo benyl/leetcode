@@ -51,3 +51,20 @@ public:
         return lastword;
     }
 };
+
+// =========================================================
+class Solution {
+public:
+    int lengthOfLastWord(const char *s) {
+        if(s==NULL) return 0;
+        const char *space=s-1;
+        int len = 0;
+        for(; *s!='\0'; ++s)
+            if(*s == ' ')
+                space = s;
+            else
+                len = s-space;
+        
+        return len;
+    }
+};

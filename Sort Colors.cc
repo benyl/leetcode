@@ -67,3 +67,19 @@ public:
         }
     }
 };
+
+// ====================================================
+class Solution {
+public:
+    void sortColors(int A[], int n) {
+        int r=-1, w=-1, b=-1; // end of red, white, blue
+        while(b<n-1) {
+            int color = A[b+1];
+            A[++b] = 2; // BLUE
+            if(color == 2) continue;
+            A[++w] = 1; // WHITE
+            if(color == 1) continue;
+            A[++r] = 0; // RED
+        }
+    }
+};

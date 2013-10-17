@@ -52,59 +52,62 @@ Return Balanced Binary Search Tree:
 0 # 3 #  6 # # # 
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <math>
-using namespace std;
-
 /**
  * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
  */
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(NULL) {}
-};
-
 /**
  * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
  */
-struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ 
+// =======================================================================
+// Convert Sorted Array to Binary Search Tree
+
+class Solution {
+public:
+    TreeNode *sortedArrayToBST(vector<int> &num, int n1=0, int n2=-1) {
+        if(n2==-1) n2=num.size();
+        if(n2<=n1) return NULL;
+        
+        int mid=(n1+n2)/2;
+        TreeNode *root = new TreeNode(num[mid]);
+        
+        root->left = sortedArrayToBST(num, n1, mid);
+        root->right = sortedArrayToBST(num, mid+1, n2);
+        return root;
+    }
 };
+
+
+// =======================================================================
+// Convert Sorted List to Binary Search Tree
 
 class Solution {
 public:
     TreeNode *sortedListToBST(ListNode *head) {
         if(!head) return NULL;
+        if(!head->next) return new TreeNode(head->val);
         
-        int len=0;
-        for(ListNode *p=head; p!=NULL; p=p->next) ++len;
-        if(len==1) return new TreeNode(head->val);
+        ListNode *pre=head, *run=head->next;
+        while(run->next!=NULL && run->next->next!=NULL) {
+            run = run->next; run = run->next;
+            pre = pre->next;
+        }
         
-        ListNode *prev=head;
-        for(int i=0; i<len/2-1; ++i) prev=prev->next;
-        
-        TreeNode *root = new TreeNode(prev->next->val);
-        root->right = sortedListToBST(prev->next->next);
-        prev->next = NULL;
+        TreeNode *root = new TreeNode(pre->next->val);
+        root->right = sortedListToBST(pre->next->next);
+        pre->next = NULL;
         root->left = sortedListToBST(head);
-        return root;
-    }
-    
-    TreeNode *sortedArrayToBST(vector<int> &num, int start=0, int end=-1) {
-        if(num.size()==0) return NULL;
-        if(end==-1) end = num.size();
-        if(start >= end) return NULL;
-        if(start == end-1) return new TreeNode(num[start]);
-        TreeNode *root = new TreeNode(num[(start+end)/2]);
-        root->left = sortedArrayToBST(num, start, (start+end)/2);
-        root->right = sortedArrayToBST(num, (start+end)/2+1, end);
         return root;
     }
 };

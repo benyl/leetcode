@@ -46,8 +46,7 @@ public:
     
     // version 2, do it in recursion
     ListNode *swapPairs(ListNode *head) {
-        if(!head) return head;
-        if(!(head->next)) return head;
+        if(!head || !(head->next)) return head;
         
         ListNode *p = head->next->next;
         head->next->next = head;

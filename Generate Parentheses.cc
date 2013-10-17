@@ -11,29 +11,75 @@ For example, given n = 3, a solution set is:
 "((()))", "(()())", "(())()", "()(())", "()()()"
 */
 
+// =============================================================
+// recursive version
+
 class Solution {
 public:
-    vector<string> generateParenthesis(int n, int left=0, int right=0) {
-        if(left>n || right>=n || left<right) return vector<string>(0, "()");
-        if(n-left==0 && n-right==1) return vector<string>(1, ")");
+    vector<string> result;
+    string temp;
+    int num;
+    
+    vector<string> generateParenthesis(int n) {
+        result.clear();
+        num = n;
+        temp = string(num * 2, ' ');
+        generate(0, 0);
         
-        if(left==right) {
-            vector<string> result = generateParenthesis(n, left+1, right);
-            for(int i=0; i<result.size(); i++)
-                result[i] = "(" + result[i];
-            return result;
+        return result;
+    }
+    
+    void generate(int left, int right) { // used left and right Parenthesis
+        if(left==num && right==num) {
+            result.push_back(temp);
         } else {
-            vector<string> result;
-            
-            vector<string> re1 = generateParenthesis(n, left+1, right);
-            for(int i=0; i<re1.size(); i++) 
-                result.push_back("(" + re1[i]);
-                
-            vector<string> re2 = generateParenthesis(n, left, right+1);
-            for(int i=0; i<re2.size(); i++) 
-                result.push_back(")" + re2[i]);
-                
-            return result;
+            if(left < num) { // use '(' if available
+                temp[left+right] = '(';
+                generate(left+1, right); // recursive
+            }
+            if(right < left) { // use ')' if available
+                temp[left+right] = ')';
+                generate(left, right+1); // recursive
+            }
         }
+    }
+};
+
+
+// =============================================================
+// back tracking solution
+
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        if(n<1) return vector<string>();
+        
+        int left=0, right=0; // used left and right Parenthesis
+        
+        vector<string> result;
+        string gen(2*n, ' ');
+        
+        while(true)
+            if(left<n) { // use '(' if available
+                gen[left + right]='(';
+                ++left;
+            } else if(right<n) { // no '(' , use ')'
+                gen[left + right]=')';
+                ++right;
+            } else { // used up Parenthesis
+                result.push_back(gen);
+                
+                while(left+right>0) { // begin back tracking
+                    if(gen[left+right-1]==')') --right; // remove Parenthesis
+                    else --left;
+                    
+                    if(gen[left+right]=='(' && left!=right) // find the optional '('
+                        break;
+                }
+                if(left+right==0) break; // end of back tracking: "()()()..."
+                gen[left+right] = ')'; // flip the optional '(' to ')'
+                ++right;
+            }
+        return result;
     }
 };

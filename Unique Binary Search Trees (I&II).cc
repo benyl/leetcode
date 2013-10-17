@@ -45,85 +45,45 @@ struct TreeNode {
 
 // =======================================================
 // Unique Binary Search Trees
+// use dynamic programming
+
 class Solution {
 public:
     int numTrees(int n) {
         vector<int> num(n+1, 0);
-        num[0] = 1;
-        num[1] = 1;
-        for(int i=2; i<=n; i++) {
-            for(int k=0; k<i; k++){
-                num[i] += num[k]*num[i-k-1];
-            }
-        }
+        num[0] = 1; num[1] = 1;
+        
+        for(int i=2; i<=n; ++i)
+            for(int j=1; j<=i; ++j)
+                num[i] += num[j-1] * num[i-j];
         
         return num[n];
-    }
-}
-
-// =======================================================
-// Unique Binary Search Trees II
-// version 1
-class Solution {
-public:
-    vector<TreeNode *> generateTrees(int n, int start=1) {
-        vector<TreeNode *> result;
-        if(n==0) result.push_back(NULL);
-        else if(n==1) result.push_back(new TreeNode(start));
-        else {
-            for(int i=0; i<n; i++) {
-                vector<TreeNode *> left = generateTrees(i, start);
-                vector<TreeNode *> right = generateTrees(n-i-1, start+i+1);
-                
-                for(int j=0; j<left.size(); j++) {
-                for(int k=0; k<right.size(); k++) {
-                        TreeNode *root = new TreeNode(start+i);
-                        root->left = left[j];
-                        root->right = right[k];
-                        result.push_back(root);
-                }
-                }
-            }
-        }
-        return result;
     }
 };
 
 // =======================================================
 // Unique Binary Search Trees II
-// version 2
+
 class Solution {
 public:
     vector<TreeNode *> generateTrees(int n, int start=1) {
+        if(n==0) return vector<TreeNode *>(1, (TreeNode *) NULL);
+        if(n==1) return vector<TreeNode *>(1, new TreeNode(start));
+        
         vector<TreeNode *> result;
-        if(n==0) result.push_back(NULL);
-        else if(n==1) result.push_back(new TreeNode(start));
-        else {
-            for(int i=0; i<n; i++) {
-                vector<vector<TreeNode *> > left;
-                vector<vector<TreeNode *> > right;
-                left.push_back(generateTrees(i, start));
-                right.push_back(generateTrees(n-i-1, start+i+1));
-                
-                int leftnum = left[0].size();
-                int rightnum = right[0].size();
-                
-                for(int j=1; j<rightnum; j++)
-                    left.push_back(generateTrees(i, start));
-                
-                for(int j=1; j<leftnum; j++)
-                    right.push_back(generateTrees(n-i-1, start+i+1));
-                
-                for(int j=0; j<rightnum; j++) {
-                for(int k=0; k<leftnum; k++) {
-                        TreeNode *root = new TreeNode(start+i);
-                        root->left = left[j][k];
-                        root->right = right[k][j];
-                        result.push_back(root);
-                }
-                }
+        for(int i=1; i<=n; ++i) {
+            vector<TreeNode *> left = generateTrees(i-1, start);
+            vector<TreeNode *> right = generateTrees(n-i, start+i);
+            
+            for(int l=0; l<left.size(); ++l)
+            for(int r=0; r<right.size(); ++r) {
+                TreeNode *root = new TreeNode(start+i-1);
+                root->left = left[l];
+                root->right = right[r];
+                result.push_back(root);
             }
         }
+        
         return result;
     }
 };

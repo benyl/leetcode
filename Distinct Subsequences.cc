@@ -17,50 +17,33 @@ S = rabbbit, T = rabbit
 Return 3.
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <vector>
+/*
+c 1 3 3
+b 1 3 0
+b 1 2 0
+b 1 1 0
+a 1 0 0
+a 1 0 0
+# 1 0 0
+  # b c
+ 
+*/
 
-using namespace std;
-
+// use dynamic programming
+// 32 milli secs pass large judge
+// time complexity: o(m*n), space complexity: o(n)
 class Solution {
 public:
     int numDistinct(string S, string T) {
-        if(S.size() == 0) return 0;
-        if(T.size() == 0) return 1;
-        if(S.size() < T.size()) return 0;
+        if(T.size()>S.size()) return 0;
+        vector<int> dp(T.size()+1, 0);
         
-        // use dynamic programming
-        vector< vector<int> > dp(S.size()+1, vector<int>(T.size()+1, 0));
-        
-        for(int j=0; j<T.size()+1; j++)
-            dp[0][j] = 0;
-
-        for(int i=0; i<S.size()+1; i++)
-            dp[i][0] = 1;
-        
-        for(int i=1; i<S.size()+1; i++)
-            for(int j=1; j<=i && j<T.size()+1; j++)
+        dp[0] = 1;
+        for(size_t i=1; i<=S.size(); ++i)
+            for(size_t j=min(i, T.size()); j>0; --j)
                 if(S[i-1] == T[j-1])
-                    dp[i][j] = dp[i-1][j] + dp[i-1][j-1];
-                else
-                    dp[i][j] = dp[i-1][j];
-
-        return dp[S.size()][T.size()];
+                    dp[j] += dp[j-1];
+        
+        return dp.back();
     }
 };
-
-void main()
-{
-    Solution sol;
-    
-    string S = "aabbbc";
-    string T = "bc";
-    
-    cout << S << endl;
-    cout << T << endl;
-    
-    cout << sol.numDistinct(S,T) << endl;
-    getchar();
-}

@@ -9,6 +9,24 @@ Find the median of the two sorted arrays.
 The overall run time complexity should be O(log (m+n)).
 */
 
+
+// =====================================================================
+// recursive solution
+// 196 milli secs pass large solution
+// time complexity o(log(m+n)), space complexity (1)
+
+/*
+    make sure m < n
+    // corner cases when m = 0, 1, 2
+    
+    if(mid_a == mid_b) {
+        return mid_a
+    } else if(mid_a < mid_b) {
+        return findMedian(A+m/2, m/2, B, n-m/2);
+    } else // mid_a >= mid_b {
+        return findMedian(A, m/2, B+m/2, n-m/2);
+    }
+*/
 class Solution {
 public:
     double findMedianSortedArrays(int A[], int m, int B[], int n) {
@@ -51,3 +69,35 @@ public:
         return (a+b+c+d-maxVal-minVal)/2.0;
     }
 };
+
+
+// =====================================================================
+// extand solution to find kth element of two sorted arrays
+// 200 milli secs pass large solution
+// time complexity o(log(m+n)), space complexity (1)
+
+class Solution {
+public:
+    double findKth(int a[], int m, int b[], int n, int k) {
+        if (m > n) return findKth(b, n, a, m, k);
+        
+        if (m == 0) return b[k-1];
+        if (k == 1) return min(a[0], b[0]);
+        
+        int pa = min(k/2, m), pb = k - pa;
+        if (a[pa-1] < b[pb-1])
+            return findKth(a+pa, m-pa, b, n, k-pa);
+        else 
+            return findKth(a, m, b+pb, n-pb, k-pb);
+    }
+    
+    double findMedianSortedArrays(int A[], int m, int B[], int n) {
+        int total = m+n;
+        if (total % 2 != 0)
+            return findKth(A, m, B, n, total/2+1);
+        else
+            return ((double) findKth(A, m, B, n, total/2) + 
+                     (double) findKth(A, m, B, n, total/2+1))/2;
+    }
+};
+

@@ -89,3 +89,35 @@ public:
     }
 };
 
+
+// version 3
+// use binary search to find the right place to insert
+ 
+bool operator < (const Interval &a,const Interval &b) {
+    return a.start < b.start;
+};
+
+class Solution {
+public:
+    vector<Interval> insert(vector<Interval> &intervals, Interval newInterval) {
+        sort(intervals.begin(), intervals.end());
+        int first=lower_bound(intervals.begin(), intervals.end(), newInterval) - intervals.begin();
+        int last;
+        
+        if(first!=0 && intervals[first-1].end >= newInterval.start)
+            newInterval.start = intervals[--first].start;
+            
+        for(last=first; last<intervals.size() && 
+            intervals[last].start<=newInterval.end; ++last)
+            newInterval.end = max(newInterval.end, intervals[last].end);
+        
+        if(last>first)
+            intervals.erase(intervals.begin()+first+1, intervals.begin()+last);
+        else
+            intervals.insert(intervals.begin()+first, newInterval);
+            
+        intervals[first] = newInterval;
+            
+        return intervals;
+    }
+};

@@ -38,33 +38,31 @@ The total number of unique paths is 2.
 Note: m and n will be at most 100.
 */
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
 
-using namespace std;
+//=====================================================================
+// Unique Paths
+// result equal to combination number of C(m+n-1, m-1) or C(m+n-1, n-1)
 
+// version 1, use o(m+n) time, o(m+n) spaces
 class Solution {
 public:
     int uniquePaths(int m, int n) {
-        vector<vector<int> > dp(m, vector<int>(n, 0));
         
-        for(int i=0; i<m; i++)
-            dp[i][0] = 1;
-            
-        for(int i=0; i<n; i++)
-            dp[0][i] = 1;
-        
-        for(int i=1; i<m; i++)
-        for(int j=1; j<n; j++)
-            dp[i][j] = dp[i-1][j] + dp[i][j-1];
-        
-        return dp[m-1][n-1];
+        vector<int> comb(m+n-1, 1);
+        for(int i=2; i<m+n-1; ++i)
+            for(int j=i-1; j>0; --j)
+                comb[j] += comb[j-1];
+                
+        return comb[m-1];
     }
+};
 
-    // it's the combinateion of C(m+n-2, n-1), overflowed
-    int uniquePathsVer2(int m, int n) {
-        int sum = 1;
+// version 2
+// directly calculate the combinateion of C(m+n-1, n-1), be awared of overflowed
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        long long sum = 1;
         
         for(int i=1; i<=n-1; i++) {
             sum *= m-1+i;
@@ -73,38 +71,47 @@ public:
         
         return sum;
     }
-    
+}
 
+//=====================================================================
+// Unique Paths II
+// version 1, use o(m*n) time, o(n) spaces
+class Solution {
+public:
     int uniquePathsWithObstacles(vector<vector<int> > &obstacleGrid) {
+        if(obstacleGrid[0][0] == 1) return 0;
+        
         int m = obstacleGrid.size();
         int n = obstacleGrid[0].size();
-        vector<vector<int> > dp(m, vector<int>(n, 0));
         
-        if(obstacleGrid[0][0] != 1)
-            dp[0][0] = 1;
-        else
-            return 0;
+        vector<int> paths(n, 0);
+        paths[0] = 1;
         
-        for(int i=1; i<m; i++)
-            if(obstacleGrid[i][0] != 1)
-                dp[i][0] = dp[i-1][0];
-            
-        for(int i=1; i<n; i++)
-            if(obstacleGrid[0][i] != 1)
-                dp[0][i] = dp[0][i-1];
+        for(int i=0; i<m; ++i)
+        for(int j=0; j<n; ++j)
+            if(obstacleGrid[i][j])
+                paths[j] = 0;
+            else if(j!=0)
+                paths[j] += paths[j-1];
         
-        for(int i=1; i<m; i++)
-        for(int j=1; j<n; j++)
-            if(obstacleGrid[i][j] != 1)
-                dp[i][j] = dp[i-1][j] + dp[i][j-1];
-        
-        return dp[m-1][n-1];
+        return paths[n-1];
     }
 };
 
-void main()
-{
-  Solution sol;
-  cout << sol.uniquePaths(2,2) << endl;
-  getchar();
-}
+// version 2, use o(m*n) time, o(1) spaces
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int> > &obstacleGrid) {
+        if(obstacleGrid[0][0] == 1) return 0;
+        
+        for(int i=0; i<obstacleGrid.size(); ++i)
+        for(int j=0; j<obstacleGrid[0].size(); ++j)
+            if(obstacleGrid[i][j]) obstacleGrid[i][j] = 0;
+            else if(j==0 && i==0) obstacleGrid[i][j] = 1;
+            else {
+                if(i!=0) obstacleGrid[i][j] += obstacleGrid[i-1][j];
+                if(j!=0) obstacleGrid[i][j] += obstacleGrid[i][j-1];
+            }
+        return obstacleGrid.back().back();
+    }
+};

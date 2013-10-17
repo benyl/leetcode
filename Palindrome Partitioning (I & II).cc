@@ -41,7 +41,6 @@ Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 
 
 3) return answers
 
-
 */
 
 class Solution {
@@ -148,33 +147,30 @@ public:
 
 //=======================================================================
 // Palindrome Partitioning II
-// Version 2, 120 milli secs for large judge
+// Version 2, 80 milli secs for large judge
 // time complexity O(n^2), space complexity O(n^2)
 class Solution {
 public:
     int minCut(string s) {
         int len = s.size();
-        int dp[len]; // store minCut of s[i:]
+        int dp[len+1]; // store minCut of s[i:]
         bool palidrome[len][len]; // store if s[i:j] is palidrome
-        
-        // init dp of mincut with maximum cut for s[i:] is (len-i-1)
-        for(int i=0; i<=len; ++i)
-            dp[i] = len-i-1;
-        for(int i=0; i<len; ++i)
-        for(int j=0; j<len; ++j)
-            palidrome[i][j] = false;
+        memset(palidrome, false, sizeof(palidrome)); // init to all false
         
         // start from end to head of string
-        for(int i=len-2; i>=0; --i)
-        for(int j=i; j<len; ++j)
-            // only consider when s[i:j] is palidrome (s[i] == s[j] and s[i+1:j-1] is palidrome)
-            // or else mincut(s[i:]) = mincut(s[i+1:]) + 1
-            if((s[i] == s[j]) && (j-i<2 || palidrome[i+1][j-1])) {
-                palidrome[i][j] = true;
-                // mincut s[i:] is minimum of mincut(s[j:]) + 1 (that is, first cut at j)
-                dp[i] = min(dp[i], dp[j+1]+1);
-            }
-        
+        for(int i=len; i>=0; --i) {
+            // init dp of mincut with maximum cut for s[i:] is (len-i-1)
+            dp[i] = len-i-1;
+            
+            for(int j=i; j<len; ++j)
+                // only consider when s[i:j] is palidrome (s[i] == s[j] and s[i+1:j-1] is palidrome)
+                // or else mincut(s[i:]) = mincut(s[i+1:]) + 1
+                if((s[i] == s[j]) && (j-i<2 || palidrome[i+1][j-1])) {
+                    palidrome[i][j] = true;
+                    // mincut s[i:] is minimum of mincut(s[j:]) + 1 (that is, first cut at j)
+                    dp[i] = min(dp[i], dp[j+1]+1);
+                }
+        }
         return dp[0];
     }
 };
@@ -186,12 +182,11 @@ public:
 class Solution {
 public:
     int minCut(string s) {
-        if (s.size() < 2)
-            return 0;
-        int len = s.size();
+        if (s.size() < 2) return 0;
+        
         // use two arrays for dyanmic programming
-        int minSegs[len+1]; // store the min palidrome segments of s[:i]
-        int palLen[len+2]; // store all lengths of palidrome that ends at s[i]
+        int minSegs[s.size()+1]; // store the min palidrome segments of s[:i]
+        int palLen[s.size()+2]; // store all lengths of palidrome that ends at s[i]
         
         // initialize the minSegs and possible lengths of palidrome for s[:1]
         minSegs[0] = 0; minSegs[1] = 1;

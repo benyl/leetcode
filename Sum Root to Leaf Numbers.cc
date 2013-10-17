@@ -39,6 +39,8 @@ Return the sum = 12 + 13 = 25.
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+ 
+// iterative version
 class Solution {
 public:
     int sumNumbers(TreeNode *root) {
@@ -84,35 +86,15 @@ public:
     }
 };
 
-
-
 // ===============================================
+// recursive version
 
-/**
- * Definition for binary tree
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
- * };
- */
 class Solution {
 public:
     int sumNumbers(TreeNode *root, int path=0) {
         if(!root) return 0;
-        
-        path *= 10;
-        path += root->val;
-        
-        // if leaf
-        if(!root->left && !root->right)
-            return path;
-        else {
-            int result=0;
-            result += sumNumbers(root->left, path);
-            result += sumNumbers(root->right, path);
-            return result;
-        }
+        path = path*10 + root->val;
+        if(!root->left && !root->right) return path;
+        return sumNumbers(root->left, path) + sumNumbers(root->right, path);
     }
 };

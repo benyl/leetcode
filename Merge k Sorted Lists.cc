@@ -74,7 +74,6 @@ public:
             tail->next = lists[min];
             tail = tail->next;
             lists[min] = lists[min]->next;
-            if(empty == lists.size()-1) break;
         }
         
         return head->next;

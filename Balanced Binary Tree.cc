@@ -40,3 +40,19 @@ public:
         return max(lh, rh) + 1;
     }
 };
+
+
+// version 2, use pointer
+class Solution {
+public:
+    bool isBalanced(TreeNode *root, int *height = NULL) {
+        if(!root) return true;
+        
+        int lh=0, rh=0;
+        if(!isBalanced(root->left, &lh) || !isBalanced(root->right, &rh) || abs(lh-rh)>1)
+            return false;
+            
+        if(height) *height = max(lh, rh) + 1;
+        return true;
+    }
+};

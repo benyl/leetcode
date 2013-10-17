@@ -9,23 +9,9 @@ Implement pow(x, n).
 class Solution {
 public:
     double pow(double x, int n) {
-        if(n == 0) return 1;
-        if(n%2 == 0) return pow(x*x, n/2);
-        
-        if(n < 0) return 1/pow(x, -1*n);
-        else return x * pow(x*x, (n-1)/2);
-    }
-};
-
-// =========================================================
-
-class Solution {
-public:
-    double pow(double x, int n) {
-        if(x==1 || n==0) return 1;
-        if(n==INT_MIN) return 1/pow(x,INT_MAX)/x;
-        if(n<0) return 1/pow(x,-1*n);
-        
-        return pow(x*x,n/2) * ((n%2) ? x : 1);
+        if(x==0 || x==1 || n==1) return x;
+        if(n==0) return 1;
+        if(n<0)  return 1/pow(x, -1-n)/x; // avoid INT_MIN
+        return pow(x*x, n/2) * ((n%2) ? x : 1);
     }
 };

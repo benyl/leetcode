@@ -46,27 +46,16 @@ public:
     }
 };
 
-template <class T>
-void PrintVec(vector<T> vec)
-{
-  for(int i=0; i<vec.size(); i++)  
-  {
-    cout << vec[i];
-    if(i!=vec.size()-1)
-      cout << ", ";
-  }
-  cout << endl;
-}
-
-int main()
-{
-  int inputArray[] = {1,2,3};
-  vector<int> input(inputArray,end(inputArray));
-
-  Solution sol;
-  sol.nextPermutation(input);
-
-  PrintVec<int>(input);
-  getchar();
-  return 0;
-}
+// compact version
+class Solution {
+public:
+    void nextPermutation(vector<int> &num) {
+        int p=num.size()-1;
+        while(p!=0 && num[p-1]>=num[p]) --p;
+        
+        sort(num.begin()+p, num.end());
+        if(p!=0)
+            swap(num[p-1], *upper_bound(
+                 num.begin()+p, num.end(), num[p-1]));
+    }
+};

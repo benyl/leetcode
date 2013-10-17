@@ -20,11 +20,7 @@ using namespace std;
 
 class Solution {
 public:
-    vector<string> restoreIpAddresses(string s) {
-        return restore(s, 4);
-    }
-
-    vector<string> restore(string s, int n){
+    vector<string> restoreIpAddresses(string s, int n=4) {
         vector<string> result;
         if(n==1){
             if(s.size()>1 && s[0]=='0') return result;
@@ -46,9 +42,9 @@ public:
         for(int i=start; i<end; i++){
             string s1 = s.substr(0, i);
             string s2 = s.substr(i);
-            vector<string> r1 = restore(s1, 1);
+            vector<string> r1 = restoreIpAddresses(s1, 1);
             if(r1.size() == 0) continue;
-            vector<string> r2 = restore(s2, n-1);
+            vector<string> r2 = restoreIpAddresses(s2, n-1);
             for(int i=0; i< r2.size(); i++)
                 result.push_back(s1+"."+r2[i]);
         }

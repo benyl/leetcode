@@ -26,19 +26,18 @@ isMatch("aab", "c*a*b") ¡ú true
 class Solution {
 public:
     bool isMatch(const char *s, const char *p) {
-        if(s==NULL) return (p==NULL);
-        if(*p=='\0') return (*s=='\0');
+        if(!p || !s) return false;
+        if(*p=='\0') return *s=='\0';
         
-        if(*(p+1)!='*')
-            if(*p == *s || (*p == '.' && *s!='\0')) 
-                return isMatch(s+1, p+1);
-            else 
-                return false;
-            
-        while(*p == *s || (*p == '.' && *s!='\0')) {
-            if(isMatch(s, p+2)) return true;
-            s++;
-        }
-        return isMatch(s, p+2);
+        if(*(p+1) != '*')
+            return (*p==*s || (*p=='.' && *s!='\0')) 
+                    && isMatch(s+1, p+1);
+                
+        if(isMatch(s, p+2)) return true; // * = 0
+        
+        while(*s==*p || (*p=='.' && *s!='\0')) // * = 1,2,...
+            if(isMatch(++s, p+2)) return true;
+        
+        return false;
     }
 };
