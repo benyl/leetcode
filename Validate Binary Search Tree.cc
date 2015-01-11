@@ -59,18 +59,22 @@ public:
 };
 
 // ==========================================================================
+// version 1, pass with 19 ms
+// resurcive, space complexity is o(n), time complexity is o(n), for n is number of tree nodes (that is, 2^h)
 class Solution {
 public:
-    bool isValidBST(TreeNode *root, int min=INT_MIN, int max=INT_MAX) {
+    bool isValidBST(TreeNode *root, int min = 0, int max = 0, 
+                    bool has_min = false, bool has_max = false) {
         if(!root) return true;
-        if(root->val<=min || root->val>=max) return false;
-        return isValidBST(root->left, min, root->val) && 
-               isValidBST(root->right, root->val, max);
+        if(has_min && root->val<=min) return false; // check if min bound exists and value is smaller than min bound
+        if(has_max && root->val>=max) return false; // check if max bound exists and value is bigger than max bound
+        return isValidBST(root->left, min, root->val, has_min, true) && 
+               isValidBST(root->right, root->val, max, true, has_max); // passdown the bound
     }
 };
 
-
-// version 2
+// version 2, pass with 64 ms, slower than version 1 because pointer address access, but with lesser parameters.
+// resurcive, space complexity is o(n), time complexity is o(n), for n is number of tree nodes (that is, 2^h)
 class Solution {
 public:
     bool isValidBST(TreeNode *root, TreeNode *min=NULL, TreeNode *max=NULL) {
